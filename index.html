@@ -76,7 +76,15 @@
   .alert-block { margin-bottom: 24px; }
 
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; }
+  .cash-acc-row { display:grid; grid-template-columns: 1fr 140px 28px; gap:8px; align-items:center; margin-bottom:8px; }
+  .cash-acc-row input { width:100%; background:#080d1a; border:1px solid var(--border); border-radius:8px; padding:9px 10px; color:#f1f5f9; font-size:14px; font-family:'Inter',sans-serif; color-scheme:dark; }
+  .cash-acc-row input:focus { outline: 2px solid var(--green); outline-offset: -1px; }
+  .cash-summary { margin-top:16px; background:#0b1222; border-radius:10px; padding:12px 14px; font-size:13px; line-height:1.7; }
+  .cash-summary .line { display:flex; justify-content:space-between; gap:12px; }
+  .cash-summary .total { border-top:1px solid #1e293b; margin-top:6px; padding-top:6px; font-weight:700; }
+  .cash-summary .note { color: var(--muted); font-size:12px; line-height:1.5; margin-top:8px; }
+  @media (max-width: 600px) { .cash-acc-row { grid-template-columns: 1fr 110px 28px; } .modal-box { padding: 20px; } }
   .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
   .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
   .modal-row { display: flex; gap: 12px; margin-bottom: 14px; }
@@ -191,6 +199,7 @@
   <div class="header-btns">
     <button class="btn-ghost" onclick="downloadBackup()">Backup</button>
     <button class="btn-ghost" onclick="openPriceModal()">Обнови цени</button>
+    <button class="btn-primary" onclick="openCashModal()">Обнови кеша</button>
   </div>
 </div>
 
@@ -384,6 +393,24 @@
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="cash-modal" onclick="if(event.target===this)closeCashModal()">
+  <div class="modal-box">
+    <div class="modal-title" style="color:#d55181">Обнови кеша</div>
+    <div class="modal-sub">Въведи колко пари имаш реално — по сметки и в брой. Заплати, наеми и разходи не се въвеждат поотделно: записва се само разликата спрямо досегашния кеш в дашборда.</div>
+    <div class="modal-row">
+      <div class="field" style="flex:0 0 180px"><label for="cash-date">Към дата</label><input type="date" id="cash-date"></div>
+    </div>
+    <div class="field"><label>Сметки</label></div>
+    <div id="cash-accounts"></div>
+    <button class="btn-ghost btn-sm" type="button" onclick="addCashAccount()">+ Добави сметка</button>
+    <div id="cash-summary" class="cash-summary"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeCashModal()">Откажи</button>
+      <button class="btn-primary" id="cash-save-btn" onclick="saveCashUpdate()">Запиши корекцията</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-Rw2WfbhXT_ApuCibiPKw6q0j7sdyG5wdJzIUwUkbWZa0ngZrBXG9XNvq1HPnqPheXg/exec";
 var TOTAL_GOAL = 50000;
@@ -424,7 +451,7 @@ var TYPE_COLORS = {
 };
 
 var CHECKLIST_DATA = [
-  { title: "Месечен контрол", period: "month", color: "#6EE7B7", items: ["До 11-то: изпълни месечната вноска към Фонд Имот 2 / XEON","До 15-то: ETF покупки (DCA)","Запиши транзакциите в журнала","Провери кеш буфера спрямо целта","На ~4 месеца: купи физическо злато и го запиши"] },
+  { title: "Месечен контрол", period: "month", color: "#6EE7B7", items: ["До 11-то: изпълни месечната вноска към Фонд Имот 2 / XEON","До 15-то: ETF покупки (DCA)","Запиши транзакциите в журнала","В края на месеца: „Обнови кеша“ с баланса от сметките","На ~4 месеца: купи физическо злато и го запиши"] },
   { title: "Тримесечен контрол", period: "quarter", color: "#60A5FA", items: ["Ребаланс ако дрейфът е >= 5 п.п.","Актуализирай цените на ETF и злато","Преглед на текущото разпределение спрямо target %","Провери за дублирани записи в JOURNAL"] },
   { title: "На 6 месеца", period: "half", color: "#A78BFA", items: ["Ребаланс първо чрез нови покупки","Преглед на кеш буфера и аварийния резерв","Провери дали целта 2028 остава реалистична"] },
   { title: "Годишен контрол", period: "year", color: "#FCD34D", items: ["Обобщи растежа на всички активи","Прегледай дела на златото и кеша","Актуализирай целта / плана за следващата година","Провери кои активи са най-далеч от target mix"] }
@@ -646,7 +673,8 @@ var LS_KEYS = {
   journalCache: 'misho_journal_cache',
   snapshotDismissed: 'misho_snapshot_dismissed',
   calc: 'misho_calc_prefs',
-  forecast: 'misho_forecast_prefs'
+  forecast: 'misho_forecast_prefs',
+  cashAccounts: 'misho_cash_accounts'
 };
 
 function lsGet(key, fallback) {
@@ -2024,21 +2052,26 @@ async function saveTxn() {
   var saveBtn = el('save-btn');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Записване...';
-  var saved = false;
-  try {
-    await appendRowToSheets(buildSheetRow(newTxn));
-    saved = true;
-  } catch (_) {}
+  var saved = await appendTxnSafely(newTxn);
   saveBtn.disabled = false;
   saveBtn.textContent = 'Запази в Sheets';
   closeTxnModal();
   resetTxnForm();
+  await finishTxnSave(newTxn, saved);
+}
 
+async function appendTxnSafely(t) {
+  try { await appendRowToSheets(buildSheetRow(t)); return true; }
+  catch (_) { return false; }
+}
+
+// След опит за запис: презареждаме от Sheets или пазим записа локално, ако Sheets не отговаря
+async function finishTxnSave(t, saved) {
   if (saved) {
     setSyncStatus('ok', 'Записано в Sheets');
-    await loadFromSheets(); // презарежда, за да получим реалния ред от Sheets
+    await loadFromSheets(); // за да получим реалния ред от Sheets
   } else {
-    pendingTxns.push(newTxn);
+    pendingTxns.push(t);
     persistPendingTxns();
     rebuildTransactions();
     renderAll();
@@ -2156,6 +2189,171 @@ function dismissSnapshotTxn(i) {
 function dismissAllSnapshotTxns() {
   if (!confirm('Да игнорирам ли всички ' + missingSnapshotTxns.length + ' записа? Те няма да се добавят в Sheets.')) return;
   dismissSnapshotTxns(missingSnapshotTxns.slice());
+}
+
+// ── CASH BALANCE UPDATE ─────────────────────────────────────────────────────
+// Вместо да се записват заплати, наеми и разходи, въвеждаш реалния баланс по сметки.
+// Записва се една транзакция „Спести“ или „Изтегли“ с разликата спрямо кеша в дашборда.
+var cashAccounts = [];
+var isSavingCash = false;
+
+function cashTickerName() {
+  return Object.keys(assetMeta).filter(function(t){ return assetMeta[t].type === 'Cash'; })[0] || 'CASH';
+}
+function endOfDay(value) {
+  var d = parseDateValue(value);
+  return d ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59).getTime() : Date.now();
+}
+
+// Кеш, последна промяна и вложено в инвестиции от тогава — към избраната дата
+function cashStateAsOf(dateValue) {
+  var cutoff = endOfDay(dateValue);
+  var cashT = cashTickerName();
+  var cash = 0, lastCashTs = 0, lastCashDate = null, laterCash = 0;
+  txns.forEach(function(t) {
+    if (t.ticker !== cashT) return;
+    var ts = dateSortValue(t.date);
+    if (!ts) return;
+    if (ts > cutoff) { laterCash += 1; return; }
+    cash += isPositiveAction(t.action) ? t.qty * t.price : -t.qty * t.price;
+    if (ts > lastCashTs) { lastCashTs = ts; lastCashDate = t.date; }
+  });
+  var invested = 0;
+  txns.forEach(function(t) {
+    if (t.ticker === cashT) return;
+    var ts = dateSortValue(t.date);
+    if (!ts || ts <= lastCashTs || ts > cutoff) return;
+    var amount = t.qty * t.price;
+    invested += isPositiveAction(t.action) ? amount + (t.fee || 0) : -(amount - (t.fee || 0));
+  });
+  return { cash: cash, lastCashTs: lastCashTs, lastCashDate: lastCashDate, invested: invested, laterCash: laterCash, cutoff: cutoff };
+}
+
+function loadCashAccounts() {
+  var saved = lsGet(LS_KEYS.cashAccounts, null);
+  if (!Array.isArray(saved) || !saved.length) saved = [{ name: 'Банкова сметка', last: null }];
+  return saved.map(function(a){ return { name: String(a.name || ''), last: a.last, amount: '' }; });
+}
+
+function renderCashAccounts() {
+  el('cash-accounts').innerHTML = cashAccounts.map(function(a, i) {
+    return '<div class="cash-acc-row">'
+      + '<input type="text" data-i="' + i + '" data-f="name" value="' + escapeHtml(a.name) + '" placeholder="напр. Заплатна сметка" aria-label="Име на сметката">'
+      + '<input type="number" step="any" inputmode="decimal" data-i="' + i + '" data-f="amount" value="' + escapeHtml(a.amount) + '"'
+      + ' placeholder="' + (a.last != null ? 'последно: ' + escapeHtml(fmtNumber(a.last, 2)) : 'сума EUR') + '" aria-label="Сума в ' + escapeHtml(a.name || 'сметката') + '">'
+      + '<button type="button" class="del-btn" data-remove="' + i + '" aria-label="Премахни сметката" title="Премахни"' + (cashAccounts.length <= 1 ? ' disabled' : '') + '>&#10005;</button>'
+      + '</div>';
+  }).join('');
+}
+
+function cashPlan() {
+  var date = el('cash-date').value || todayISO();
+  var filled = cashAccounts.filter(function(a){ return String(a.amount).trim() !== ''; });
+  var balance = filled.reduce(function(s, a){ return s + parseNumber(a.amount, 0); }, 0);
+  var state = cashStateAsOf(date);
+  var diff = balance - state.cash;
+  return { date: date, filled: filled, balance: balance, state: state, diff: diff };
+}
+
+function renderCashSummary() {
+  var box = el('cash-summary');
+  var plan = cashPlan();
+  var s = plan.state;
+  var saveBtn = el('cash-save-btn');
+  var html = '<div class="line"><span>Кеш в дашборда към ' + escapeHtml(formatDateDisplay(plan.date)) + '</span><b>' + escapeHtml(fmtEUR(s.cash)) + '</b></div>';
+  if (!plan.filled.length) {
+    box.innerHTML = html + '<div class="note">Въведи сумата поне в една сметка.</div>';
+    saveBtn.disabled = true;
+    return;
+  }
+  html += '<div class="line"><span>Реален баланс (' + plan.filled.length + (plan.filled.length === 1 ? ' сметка' : ' сметки') + ')</span><b>' + escapeHtml(fmtEUR(plan.balance)) + '</b></div>';
+  var exact = Math.abs(plan.diff) < 0.5;
+  html += '<div class="line total"><span>Ще се запише</span><span style="color:' + (exact ? 'var(--sub)' : plan.diff > 0 ? 'var(--green)' : 'var(--yellow)') + '">'
+    + (exact ? 'нищо — кешът е точен' : (plan.diff > 0 ? '„Спести“ +' : '„Изтегли“ −') + escapeHtml(fmtNumber(Math.abs(plan.diff), 2)) + ' EUR') + '</span></div>';
+
+  var notes = [];
+  if (s.lastCashDate) {
+    var days = Math.max(1, Math.round((s.cutoff - s.lastCashTs) / 86400000));
+    var saved = plan.diff + s.invested;
+    var months = days / 30.44;
+    notes.push('От последната промяна на кеша (' + escapeHtml(formatDateDisplay(s.lastCashDate)) + '): кешът се променя с ' + escapeHtml(fmtSignedEUR(plan.diff))
+      + ', а в инвестиции си вложил ' + escapeHtml(fmtEUR(s.invested)) + '. Общо спестено: <b style="color:#f1f5f9">' + escapeHtml(fmtSignedEUR(saved)) + '</b>'
+      + (months >= 1 ? ' (≈ ' + escapeHtml(fmtEUR(saved / months)) + '/мес)' : '') + '.');
+    notes.push('Ако имаш покупки след ' + escapeHtml(formatDateDisplay(s.lastCashDate)) + ', които още не са в журнала, въведи ги първо — иначе „спестено“ ще е по-малко от реалното. Самата корекция на кеша не зависи от тях.');
+  }
+  var blanks = cashAccounts.length - plan.filled.length;
+  if (blanks > 0) notes.push(blanks + (blanks === 1 ? ' сметка без сума не се брои.' : ' сметки без сума не се броят.'));
+  if (s.laterCash > 0) notes.push('Внимание: има ' + s.laterCash + ' записа за кеш след тази дата. Корекцията ще промени и тях.');
+  box.innerHTML = html + (notes.length ? '<div class="note">' + notes.join('<br>') + '</div>' : '');
+  saveBtn.disabled = exact || isSavingCash;
+}
+
+function openCashModal() {
+  cashAccounts = loadCashAccounts();
+  el('cash-date').value = todayISO();
+  renderCashAccounts();
+  renderCashSummary();
+  el('cash-modal').classList.remove('hidden');
+  var firstAmount = el('cash-accounts').querySelector('input[data-f="amount"]');
+  if (firstAmount) firstAmount.focus();
+}
+function closeCashModal() { el('cash-modal').classList.add('hidden'); }
+
+function addCashAccount() {
+  cashAccounts.push({ name: '', last: null, amount: '' });
+  renderCashAccounts();
+  renderCashSummary();
+  var inputs = el('cash-accounts').querySelectorAll('input[data-f="name"]');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+async function saveCashUpdate() {
+  if (isSavingCash) return;
+  var plan = cashPlan();
+  if (!plan.filled.length || Math.abs(plan.diff) < 0.5) return;
+  if (!parseDateValue(plan.date)) { alert('Моля въведи дата.'); return; }
+  var breakdown = plan.filled.map(function(a){ return (a.name.trim() || 'сметка') + ' ' + fmtNumber(parseNumber(a.amount, 0), 2); }).join('; ');
+  var txn = {
+    date: plan.date,
+    action: plan.diff > 0 ? 'Спести' : 'Изтегли',
+    ticker: cashTickerName(),
+    qty: Math.round(Math.abs(plan.diff) * 100) / 100,
+    price: 1,
+    fee: 0,
+    note: 'Корекция на баланса към ' + formatDateDisplay(plan.date) + ' (' + breakdown + ')'
+  };
+  // Запомняме имената на сметките и последните суми за следващия път
+  lsSet(LS_KEYS.cashAccounts, cashAccounts.filter(function(a){ return a.name.trim() || String(a.amount).trim() !== ''; }).map(function(a) {
+    return { name: a.name.trim(), last: String(a.amount).trim() !== '' ? parseNumber(a.amount, 0) : a.last };
+  }));
+
+  isSavingCash = true;
+  var btn = el('cash-save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Записване...';
+  var saved = await appendTxnSafely(txn);
+  isSavingCash = false;
+  btn.textContent = 'Запиши корекцията';
+  closeCashModal();
+  await finishTxnSave(txn, saved);
+}
+
+function initCashModal() {
+  var list = el('cash-accounts');
+  list.addEventListener('input', function(e) {
+    var i = Number(e.target.dataset.i), f = e.target.dataset.f;
+    if (!cashAccounts[i] || !f) return;
+    cashAccounts[i][f] = e.target.value;
+    renderCashSummary();
+  });
+  list.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-remove]');
+    if (!btn || btn.disabled) return;
+    cashAccounts.splice(Number(btn.dataset.remove), 1);
+    renderCashAccounts();
+    renderCashSummary();
+  });
+  el('cash-date').addEventListener('change', renderCashSummary);
 }
 
 // ── PRICES UI ───────────────────────────────────────────────────────────────
@@ -2532,7 +2730,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (item && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); toggleCheck(item.dataset.key); }
   });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); }
+    if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); closeCashModal(); }
   });
 
   // Показваме последните известни данни веднага, докато Sheets се зарежда
@@ -2540,6 +2738,7 @@ document.addEventListener('DOMContentLoaded', function() {
   populateTickerSelects();
   initForecast();
   initAllocation();
+  initCashModal();
   initCalculator();
   renderChecklist();
   rebuildTransactions();
