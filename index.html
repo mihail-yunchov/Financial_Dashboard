@@ -26,6 +26,7 @@
   .badge.ok     { background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.4); color: var(--green); }
   .badge.error  { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.4); color: var(--red); }
   .badge.loading{ background: rgba(252,211,77,0.1);  border: 1px solid rgba(252,211,77,0.4);  color: var(--yellow); }
+  .badge.warn   { background: rgba(252,211,77,0.1);  border: 1px solid rgba(252,211,77,0.4);  color: var(--yellow); }
   .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .badge.loading .badge-dot { animation: pulse 1.5s infinite; }
 
@@ -37,8 +38,8 @@
   .btn-blue    { background: var(--blue); color: #0a0f1e; }
   .btn-icon    { background: none; color: var(--muted); font-size: 18px; padding: 4px 8px; }
 
-  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; }
-  .tab-btn { padding: 13px 18px; font-size: 13px; font-weight: 400; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; border-radius: 0; }
+  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; overflow-x: auto; scrollbar-width: none; }
+  .tab-btn { flex-shrink: 0; white-space: nowrap; padding: 13px 18px; font-size: 13px; font-weight: 400; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; border-radius: 0; }
   .tab-btn.active { color: var(--green); font-weight: 600; border-bottom-color: var(--green); }
 
   .main { padding: 24px 28px; max-width: 1180px; margin: 0 auto; }
@@ -46,7 +47,7 @@
   .card-top { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
   .card-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; font-weight: 600; }
   .card-value { font-size: 20px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.3px; }
-  .card-sub   { font-size: 12px; color: var(--sub); margin-top: 4px; }
+  .card-sub   { font-size: 12px; color: var(--sub); margin-top: 4px; overflow-wrap: anywhere; }
 
   .grid-kpi  { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr)); gap: 14px; margin-bottom: 24px; }
   .grid-assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px,1fr)); gap: 12px; margin-bottom: 24px; }
@@ -56,7 +57,8 @@
   .progress-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
   .section-title { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
 
-  .holdings-grid { display: grid; grid-template-columns: minmax(180px,1.1fr) 90px 100px 95px 110px 80px 90px; gap: 8px; align-items: center; }
+  .holdings-grid { display: grid; grid-template-columns: minmax(170px,1.1fr) 90px 95px 95px 105px 120px 65px 75px; gap: 8px; align-items: center; }
+  .holdings-total { background: transparent; border: 1px solid var(--border); border-left: 3px solid var(--border); }
   .holdings-header { padding: 8px 14px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
   .holdings-row { padding: 13px 14px; background: var(--surface); border-radius: 10px; margin-bottom: 8px; border-left: 3px solid transparent; }
 
@@ -82,6 +84,7 @@
   .field label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: block; font-weight: 500; }
   .field input, .field select { width: 100%; background: #080d1a; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: #f1f5f9; font-size: 14px; font-family: 'Inter', sans-serif; }
   .field input:focus, .field select:focus { outline: 2px solid var(--green); outline-offset: -1px; }
+  .field input { color-scheme: dark; }
   .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
 
   .pill { display:inline-flex; align-items:center; padding:3px 8px; border-radius:999px; font-size:11px; font-weight:700; }
@@ -91,7 +94,7 @@
   .mini-note { font-size:11px; color: var(--muted); margin-top: 5px; }
 
   .overflow-x { overflow-x: auto; }
-  .min-w { min-width: 770px; }
+  .min-w { min-width: 900px; }
   .min-w-j { min-width: 760px; }
   .hidden { display: none; }
   .flex-sb { display: flex; justify-content: space-between; align-items: center; }
@@ -99,12 +102,70 @@
   .mb24 { margin-bottom: 24px; }
   .del-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; padding: 0; }
   #refresh-btn { font-size: 20px; padding: 2px 8px; }
-  .mb24 { margin-bottom: 24px; }
-  .nap-grid { display:grid; grid-template-columns: 80px 1fr 80px 100px 110px 110px 90px; gap:8px; align-items:center; }
+  .nap-grid { display:grid; grid-template-columns: 70px minmax(140px,1fr) 90px 100px 120px 150px 110px; gap:8px; align-items:center; }
   .nap-header { padding:8px 10px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
   .nap-row { padding:11px 10px; background:var(--surface); border-radius:8px; margin-bottom:6px; font-size:13px; }
   .price-tile { background:var(--surface); border-radius:10px; padding:12px 14px; position:relative; overflow:hidden; }
   .price-tile-top { position:absolute; top:0; left:0; right:0; height:2px; }
+
+  .banner { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.35); color: #fecaca; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; }
+  .banner b { color: var(--red); }
+  .pill.local { background: rgba(96,165,250,0.12); color: var(--blue); border:1px solid rgba(96,165,250,0.3); }
+  .flag-cell { display:flex; flex-direction:column; gap:3px; align-items:flex-start; }
+  .select-sm { background:#080d1a; border:1px solid var(--border); border-radius:8px; padding:6px 10px; color:#f1f5f9; font-size:12px; font-family:'Inter',sans-serif; }
+  .btn-sm { font-size:12px; padding:6px 12px; }
+  .alert-row.block { display:block; }
+  .alert-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .missing-list { margin-top:10px; display:flex; flex-direction:column; gap:6px; font-weight:400; font-size:12px; color: var(--sub); }
+  .missing-row { display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap; padding:6px 0; border-top:1px solid rgba(148,163,184,0.12); }
+  .check-item:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; border-radius: 4px; }
+
+  .fc-headline { padding:10px 14px; border-radius:8px; font-size:13px; font-weight:600; margin-bottom:12px; line-height:1.45; }
+  .fc-headline.ok  { background: rgba(110,231,183,0.08); border:1px solid rgba(110,231,183,0.3); color: var(--green); }
+  .fc-headline.bad { background: rgba(252,211,77,0.08);  border:1px solid rgba(252,211,77,0.3);  color: var(--yellow); }
+  .stat-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:10px; }
+  .stat-tile { background:#0b1222; border-radius:8px; padding:10px 12px; }
+  .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; font-weight:600; margin-bottom:4px; }
+  .stat-value { font-size:17px; font-weight:700; color:#f1f5f9; }
+  .stat-sub { font-size:11px; color:var(--sub); margin-top:3px; }
+
+  .alloc-layout { display:grid; grid-template-columns: 220px 1fr; gap:28px; align-items:center; }
+  .alloc-chart { position:relative; width:220px; height:220px; margin:0 auto; }
+  .alloc-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; text-align:center; }
+  .alloc-center .l { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; font-weight:600; }
+  .alloc-center .v { font-size:19px; font-weight:800; color:#f1f5f9; margin-top:2px; }
+  .alloc-center .s { font-size:11px; color:var(--sub); margin-top:2px; }
+  .alloc-row { display:grid; grid-template-columns: 10px minmax(110px,170px) 1fr 160px; gap:10px; align-items:center; padding:7px 6px; border-radius:6px; font-size:13px; cursor:default; }
+  .alloc-row:hover, .alloc-row.active { background: rgba(148,163,184,0.08); }
+  .alloc-swatch { width:10px; height:10px; border-radius:3px; }
+  .alloc-track { position:relative; height:6px; background:#1e293b; border-radius:3px; }
+  .alloc-fill { position:absolute; left:0; top:0; bottom:0; border-radius:3px; }
+  .alloc-tick { position:absolute; top:-4px; bottom:-4px; width:2px; margin-left:-1px; background:#e2e8f0; border-radius:1px; }
+  .alloc-fig { text-align:right; white-space:nowrap; color:#f1f5f9; }
+  .alloc-fig .t { color:var(--muted); font-size:12px; }
+  @media (max-width: 600px) {
+    .alloc-layout { grid-template-columns: 1fr; gap:16px; }
+    .alloc-row { grid-template-columns: 10px 1fr auto; row-gap:6px; }
+    .alloc-fig { order:3; }
+    .alloc-track { order:4; grid-column: 2 / 4; }
+  }
+
+  .calc-inputs { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:12px; }
+  .calc-assets { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; align-items:center; }
+  .calc-assets-label { font-size:12px; color:var(--muted); margin-right:4px; }
+  .chip { display:inline-flex; align-items:center; padding:5px 12px; border-radius:999px; font-size:12px; font-weight:700; background:#1e293b; color:var(--muted); border:1px solid #334155; }
+  .chip.on { color:#ffffff; }
+  .calc-grid { display:grid; grid-template-columns: minmax(150px,1.2fr) 100px minmax(150px,1fr) minmax(170px,1fr); gap:8px; align-items:center; }
+  .calc-header { padding:6px 12px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
+  .calc-row { padding:10px 12px; background:#0b1222; border-radius:8px; margin-bottom:6px; font-size:13px; border-left:3px solid transparent; }
+  .calc-amount { font-weight:800; font-size:15px; }
+  .calc-summary { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:12px; font-size:12px; color:var(--sub); }
+  @media (max-width: 600px) {
+    .calc-header { display:none; }
+    .calc-grid { grid-template-columns: 1fr auto; row-gap:4px; }
+    .calc-grid > :nth-child(3), .calc-grid > :nth-child(4) { font-size:12px; color:var(--muted); }
+    .calc-grid > :nth-child(2), .calc-grid > :nth-child(4) { text-align:right; }
+  }
 
   @media (max-width: 760px) {
     .header, .tabs, .main { padding-left: 16px; padding-right: 16px; }
@@ -142,6 +203,7 @@
 </div>
 
 <div class="main">
+  <div id="data-banner"></div>
   <div id="tab-overview">
     <div class="grid-kpi" id="kpi-grid"></div>
     <div class="card mb24" id="total-progress-card" style="border:1px solid rgba(110,231,183,0.27)">
@@ -149,7 +211,7 @@
       <div class="flex-sb" style="margin-bottom:10px; gap: 12px; flex-wrap: wrap;">
         <div>
           <div class="section-title" style="margin:0">Общ напредък към цел 2028</div>
-          <div class="mini-note">Тотал цел: <span id="goal-label"></span> • Последни цени от SETTINGS / локален fallback</div>
+          <div class="mini-note">Цел: <span id="goal-label"></span> • <span id="balanced-label"></span></div>
         </div>
         <div id="total-pct" style="font-size:20px;font-weight:800;color:var(--green)">0%</div>
       </div>
@@ -160,16 +222,58 @@
         <span id="goal-progress-label">0 EUR</span><span id="goal-gap-label">Остават 0 EUR</span>
       </div>
     </div>
+    <div class="card mb24" id="forecast-card" style="border:1px solid rgba(167,139,250,0.3)">
+      <div class="card-top" style="background:var(--purple)"></div>
+      <div class="section-title" style="margin-bottom:12px">Прогноза към целта</div>
+      <div class="calc-inputs">
+        <div class="field"><label for="fc-monthly">Месечна вноска (EUR)</label><input type="number" id="fc-monthly" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label for="fc-return">Год. доходност (%)</label><input type="number" id="fc-return" step="0.5" min="-50" max="50" inputmode="decimal" placeholder="0"></div>
+        <div class="field"><label for="fc-deadline">Краен срок</label><input type="month" id="fc-deadline"></div>
+      </div>
+      <div id="forecast-result"></div>
+    </div>
     <div class="section-title">Напредък по актив</div>
     <div class="grid-assets" id="assets-grid"></div>
+    <div class="card mb24" id="alloc-card" style="border:1px solid rgba(148,163,184,0.25)">
+      <div class="card-top" style="background:#64748b"></div>
+      <div class="section-title" style="margin-bottom:16px">Разпределение: реално спрямо цел</div>
+      <div class="alloc-layout">
+        <div class="alloc-chart">
+          <canvas id="alloc-chart" role="img" aria-label="Кръгова диаграма на реалното разпределение на портфолиото"></canvas>
+          <div class="alloc-center" id="alloc-center"></div>
+        </div>
+        <div>
+          <div id="alloc-list"></div>
+          <div class="mini-note" style="margin-top:8px">Цветната линия е реалният дял, бялата чертичка е целевият.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb24" id="calc-card" style="border:1px solid rgba(96,165,250,0.27)">
+      <div class="card-top" style="background:var(--blue)"></div>
+      <div class="section-title" style="margin-bottom:4px">Калкулатор: следваща вноска</div>
+      <div class="mini-note" style="margin:0 0 14px">Парите отиват първо към актива с най-нисък напредък спрямо целевия му дял, докато се изравни със следващия. Нищо не се продава и нищо не се записва в журнала.</div>
+      <div class="calc-inputs">
+        <div class="field"><label for="calc-amount">Сума (EUR)</label><input type="number" id="calc-amount" min="0" step="any" inputmode="decimal"></div>
+        <div class="field"><label for="calc-min">Мин. поръчка (EUR)</label><input type="number" id="calc-min" min="0" step="any" inputmode="decimal" placeholder="няма"></div>
+        <div class="field"><label for="calc-source">Откъде са парите</label>
+          <select id="calc-source">
+            <option value="new">Нови пари (напр. заплата)</option>
+            <option value="cash">От кеш резерва</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-assets" id="calc-assets"></div>
+      <div id="calc-result"></div>
+    </div>
     <div id="alerts-section"></div>
   </div>
 
   <div id="tab-holdings" class="hidden">
+    <div class="mini-note" style="margin:0 0 12px">Печалбата е спрямо средната цена на покупка (с таксите) и текущите цени. Колкото по-актуални са цените (бутон „Обнови цени“ или SETTINGS в Sheets), толкова по-точна е.</div>
     <div class="overflow-x">
       <div class="min-w">
         <div class="holdings-grid holdings-header">
-          <div>Актив</div><div>Кол.</div><div>Ср. цена</div><div>Цена</div><div>Стойност</div><div>Цел %</div><div>Дрейф</div>
+          <div>Актив</div><div>Кол.</div><div title="Средна цена на покупка, с таксите">Ср. цена</div><div>Цена</div><div>Стойност</div><div>Печалба</div><div>Цел %</div><div>Дрейф</div>
         </div>
         <div id="holdings-rows"></div>
       </div>
@@ -202,13 +306,18 @@
   </div>
 
   <div id="tab-analysis" class="hidden">
-    <div class="mb24">
+    <div class="flex-sb mb24" style="flex-wrap:wrap;gap:12px">
       <div class="section-title" style="margin:0">Анализ и инструменти</div>
+      <div id="price-sync-badge" class="badge warn">
+        <div class="badge-dot"></div>
+        <span id="price-sync-text">Live цените още не са заредени</span>
+      </div>
     </div>
     <div id="live-prices-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:28px"></div>
     <div class="card mb24" style="border:1px solid rgba(96,165,250,0.27)">
       <div class="card-top" style="background:var(--blue)"></div>
-      <div class="section-title" style="margin-bottom:16px">Ръст на портфолиото по месец</div>
+      <div class="section-title" style="margin-bottom:4px">Вложени средства и прогноза</div>
+      <div class="mini-note" style="margin:0 0 16px">Зелено: натрупана сума на вноските по цена на покупка (с таксите), не пазарна стойност. Жълтата точка е пазарната стойност днес. Лилавият пунктир е прогнозата до срока с настройките от картата „Прогноза към целта“ в „Обзор“.</div>
       <canvas id="growth-chart" height="80"></canvas>
     </div>
     <div class="card" style="border:1px solid rgba(110,231,183,0.27)">
@@ -216,14 +325,15 @@
       <div class="flex-sb" style="margin-bottom:16px;flex-wrap:wrap;gap:12px">
         <div>
           <div class="section-title" style="margin:0">Справка за НАП — ETF позиции</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Годишна данъчна декларация</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Позиции към 31.12 на избраната година • средно претеглена цена, таксите са включени в цената на придобиване</div>
         </div>
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="nap-year" class="select-sm" onchange="renderNAPTable()" aria-label="Данъчна година"></select>
           <button class="btn-ghost" onclick="exportNAP('csv')" style="font-size:12px;padding:6px 14px">Свали CSV</button>
           <button class="btn-primary" onclick="exportNAP('print')" style="font-size:12px;padding:6px 14px">Принтирай</button>
         </div>
       </div>
-      <div class="overflow-x"><div id="nap-table" style="min-width:700px"></div></div>
+      <div class="overflow-x"><div id="nap-table" style="min-width:820px"></div></div>
     </div>
   </div>
 
@@ -252,6 +362,7 @@
       <div class="field"><label>Цена на единица</label><input type="number" step="any" id="f-price" placeholder="напр. 115"></div>
     </div>
     <div class="modal-row" style="margin-bottom:0">
+      <div class="field" style="flex:0 0 120px"><label>Такса (EUR)</label><input type="number" step="any" min="0" id="f-fee" placeholder="0"></div>
       <div class="field" style="flex:1"><label>Бележка</label><input type="text" id="f-note" placeholder="напр. месечна вноска / DCA"></div>
     </div>
     <div class="modal-footer">
@@ -276,27 +387,33 @@
 <script>
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSFBKOzvA28jYFY3fvfovS0uTa2cyzSznsMFVfWPQA6PyHpxmSZfDO2fHqIFZ5eH6sOg/exec";
 var TOTAL_GOAL = 50000;
+var MONTHLY_TARGET = 1150; // EUR/месец, инвестирани извън кеша
+var GOAL_DEADLINE = '2028-12'; // месецът, до който трябва да е постигната целта (ГГГГ-ММ)
 
+// Офлайн резервно копие на SETTINGS от Google Sheets (цени към 21.11.2026).
 var DEFAULT_SETTINGS = [
   ["Ticker", "Asset Name", "Type", "Target %", "Price (EUR)"],
-  ["EUNL",   "iShares Core MSCI World Acc ETF",                                     "ETF",    0.15, 112],
-  ["ZPRL",   "SPDR EURO STOXX Low Volatility UCITS ETF (Acc)",                       "ETF",    0.10,  59],
-  ["MIVA",   "Amundi MSCI Europe Minimum Volatility Factor UCITS ETF - EUR (Acc)",   "ETF",    0.10, 163],
-  ["GOLD",   "Physical Gold (1g)",                                                   "Gold",   0.25, 112],
-  ["XEON",   "Xtrackers II EUR Overnight Rate Swap UCITS ETF (Acc) - Fund Property 2","ETF",   0.34, 149],
+  ["EUNL",   "iShares Core MSCI World Acc ETF",                                     "ETF",    0.15, 111.55],
+  ["ZPRL",   "SPDR EURO STOXX Low Volatility UCITS ETF (Acc)",                       "ETF",    0.10,  59.4],
+  ["MIVA",   "Amundi MSCI Europe Minimum Volatility Factor UCITS ETF - EUR (Acc)",   "ETF",    0.10, 162.7],
+  ["GOLD",   "Physical Gold (1g)",                                                   "Gold",   0.25, 111.6],
+  ["XEON",   "Xtrackers II EUR Overnight Rate Swap UCITS ETF (Acc) - Fund Property 2","ETF",   0.34, 148.65],
   ["CASH",   "Money in cash (not invested)",                                         "Cash",   0.05,   1],
   ["STOCKS", "Robo-advisor (stocks)",                                                "Stocks", 0.01,   1]
 ];
 
+// Цветовете са проверени заедно (различими и при цветна слепота) върху тъмния фон.
+// ALLOCATION_ORDER е редът в кръговата диаграма — избран така, че съседните цветове да се различават.
 var DISPLAY_OVERRIDES = {
-  EUNL:   { label: "MSCI World (EUNL)",    color: "#6EE7B7" },
-  ZPRL:   { label: "Low Vol EU (ZPRL)",     color: "#34D399" },
-  MIVA:   { label: "Min Vol EUR (MIVA)",    color: "#10B981" },
-  GOLD:   { label: "Злато (физическо)",     color: "#FCD34D" },
-  XEON:   { label: "Фонд Имот 2 (XEON)",   color: "#60A5FA" },
-  CASH:   { label: "Кеш резерв",            color: "#F9A8D4" },
-  STOCKS: { label: "Робо-акции",            color: "#A78BFA" }
+  EUNL:   { label: "MSCI World (EUNL)",    color: "#199e70" },
+  ZPRL:   { label: "Low Vol EU (ZPRL)",     color: "#d95926" },
+  MIVA:   { label: "Min Vol EUR (MIVA)",    color: "#0ca30c" },
+  GOLD:   { label: "Злато (физическо)",     color: "#c98500" },
+  XEON:   { label: "Фонд Имот 2 (XEON)",   color: "#3987e5" },
+  CASH:   { label: "Кеш резерв",            color: "#d55181" },
+  STOCKS: { label: "Робо-акции",            color: "#9085e9" }
 };
+var ALLOCATION_ORDER = ["XEON", "GOLD", "CASH", "MIVA", "STOCKS", "EUNL", "ZPRL"];
 
 var TYPE_COLORS = {
   ETF: "#60A5FA",
@@ -307,12 +424,14 @@ var TYPE_COLORS = {
 };
 
 var CHECKLIST_DATA = [
-  { title: "Месечен контрол", color: "#6EE7B7", items: ["До 11-то: изпълни месечната вноска към Фонд Имот 2 / XEON","До 15-то: ETF покупки (DCA)","Запиши транзакциите в журнала","Провери кеш буфера спрямо целта","На ~4 месеца: купи физическо злато и го запиши"] },
-  { title: "Тримесечен контрол", color: "#60A5FA", items: ["Ребаланс ако дрейфът е >= 5 п.п.","Актуализирай цените на ETF и злато","Преглед на текущото разпределение спрямо target %","Провери за дублирани записи в JOURNAL"] },
-  { title: "На 6 месеца", color: "#A78BFA", items: ["Ребаланс първо чрез нови покупки","Преглед на кеш буфера и аварийния резерв","Провери дали целта 2028 остава реалистична"] },
-  { title: "Годишен контрол", color: "#FCD34D", items: ["Обобщи растежа на всички активи","Прегледай дела на златото и кеша","Актуализирай целта / плана за следващата година","Провери кои активи са най-далеч от target mix"] }
+  { title: "Месечен контрол", period: "month", color: "#6EE7B7", items: ["До 11-то: изпълни месечната вноска към Фонд Имот 2 / XEON","До 15-то: ETF покупки (DCA)","Запиши транзакциите в журнала","Провери кеш буфера спрямо целта","На ~4 месеца: купи физическо злато и го запиши"] },
+  { title: "Тримесечен контрол", period: "quarter", color: "#60A5FA", items: ["Ребаланс ако дрейфът е >= 5 п.п.","Актуализирай цените на ETF и злато","Преглед на текущото разпределение спрямо target %","Провери за дублирани записи в JOURNAL"] },
+  { title: "На 6 месеца", period: "half", color: "#A78BFA", items: ["Ребаланс първо чрез нови покупки","Преглед на кеш буфера и аварийния резерв","Провери дали целта 2028 остава реалистична"] },
+  { title: "Годишен контрол", period: "year", color: "#FCD34D", items: ["Обобщи растежа на всички активи","Прегледай дела на златото и кеша","Актуализирай целта / плана за следващата година","Провери кои активи са най-далеч от target mix"] }
 ];
 
+// Офлайн резервно копие на JOURNAL от Google Sheets (обновено 21.11.2026).
+// Използва се само когато няма връзка със Sheets и в браузъра няма запазено копие.
 var DEFAULT_TXNS = [
   {
     "date": "07.11.2025",
@@ -338,7 +457,7 @@ var DEFAULT_TXNS = [
     "ticker": "EUNL",
     "qty": 1.67256236,
     "price": 111.8,
-    "fee": 0.0,
+    "fee": 0,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -347,7 +466,7 @@ var DEFAULT_TXNS = [
     "ticker": "EUNL",
     "qty": 1.65019559,
     "price": 113.32,
-    "fee": 0.0,
+    "fee": 0,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -363,9 +482,9 @@ var DEFAULT_TXNS = [
     "date": "31.10.2025",
     "action": "Купи",
     "ticker": "GOLD",
-    "qty": 50.0,
+    "qty": 50,
     "price": 111.6,
-    "fee": 0.0,
+    "fee": 0,
     "note": "Първа инвестиция в злато (50гр. - 2х20гр; 1х10гр)"
   },
   {
@@ -392,7 +511,7 @@ var DEFAULT_TXNS = [
     "ticker": "MIVA",
     "qty": 1.79186328,
     "price": 156.82,
-    "fee": 1.0,
+    "fee": 1,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -419,7 +538,7 @@ var DEFAULT_TXNS = [
     "ticker": "XEON",
     "qty": 1.00003033,
     "price": 148.37,
-    "fee": 1.0,
+    "fee": 1,
     "note": "Реинвестирани в ETF фонд"
   },
   {
@@ -428,16 +547,16 @@ var DEFAULT_TXNS = [
     "ticker": "XEON",
     "qty": 52.91565771,
     "price": 148.38,
-    "fee": 0.0,
+    "fee": 0,
     "note": "Реинвестирани в ETF фонд"
   },
   {
     "date": "01.11.2025",
     "action": "Купи",
     "ticker": "STOCKS",
-    "qty": 579.0,
-    "price": 1.0,
-    "fee": 0.0,
+    "qty": 579,
+    "price": 1,
+    "fee": 0,
     "note": "Инвестиция в Акции"
   },
   {
@@ -446,7 +565,7 @@ var DEFAULT_TXNS = [
     "ticker": "ZPRL",
     "qty": 2.48326875,
     "price": 56.78,
-    "fee": 0.0,
+    "fee": 0,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -455,7 +574,7 @@ var DEFAULT_TXNS = [
     "ticker": "ZPRL",
     "qty": 2.48239436,
     "price": 56.8,
-    "fee": 0.0,
+    "fee": 0,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -464,7 +583,7 @@ var DEFAULT_TXNS = [
     "ticker": "ZPRL",
     "qty": 2.44498777,
     "price": 57.26,
-    "fee": 1.0,
+    "fee": 1,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -473,7 +592,7 @@ var DEFAULT_TXNS = [
     "ticker": "ZPRL",
     "qty": 2.41005336,
     "price": 58.09,
-    "fee": 1.0,
+    "fee": 1,
     "note": "ETF Plan A - Месечна вноска"
   },
   {
@@ -495,108 +614,116 @@ var DEFAULT_TXNS = [
     "note": "ETF Plan A - Месечна вноска"
   },
   {
-    "date": "04.03.2026",
+    "date": "10.04.2026",
     "action": "Спести",
     "ticker": "CASH",
-    "qty": 7962.43,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Пари в обръщение към началото на 2026"
+    "qty": 8171,
+    "price": 1,
+    "fee": 0,
+    "note": "Пари в обръщение към началото на април 2026"
   },
   {
-    "date": "2026-03-15",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 2300.0,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Заплата февруари"
-  },
-  {
-    "date": "2026-03-15",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 2300.0,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Заплата февруари"
-  },
-  {
-    "date": "2026-03-15",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 2200.0,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Заплата март"
-  },
-  {
-    "date": "2026-03-15",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 2200.0,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Заплата март"
-  },
-  {
-    "date": "2026-03-15",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 100.0,
-    "price": 1.0,
-    "fee": 0.0,
-    "note": "Test"
+    "date": "20.03.2026",
+    "action": "Купи",
+    "ticker": "EUNL",
+    "qty": 4.00605715,
+    "price": 112.33,
+    "fee": 0,
+    "note": "ETF Plan A - Месечна вноска"
   }
 ];
 
+// ── STATE ───────────────────────────────────────────────────────────────────
+// Източник на истината е JOURNAL в Google Sheets. Когато няма връзка, се показва
+// последното запазено копие от Sheets (кеш), а ако няма и него — вграденият snapshot.
+var LS_KEYS = {
+  pending: 'misho_pending_txns',          // записи, които НЕ са стигнали до Sheets
+  checks: 'misho_checks_v2',
+  prices: 'misho_prices_v2',
+  legacyPrices: 'misho_prices',
+  settingsSeen: 'misho_settings_seen',    // последно видяната цена от SETTINGS по тикер
+  settingsCache: 'misho_settings_cache',
+  journalCache: 'misho_journal_cache',
+  snapshotDismissed: 'misho_snapshot_dismissed',
+  calc: 'misho_calc_prefs',
+  forecast: 'misho_forecast_prefs'
+};
+
+function lsGet(key, fallback) {
+  try {
+    var v = localStorage.getItem(key);
+    return v == null ? fallback : JSON.parse(v);
+  } catch (_) { return fallback; }
+}
+function lsSet(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
+function lsRemove(key) { try { localStorage.removeItem(key); } catch (_) {} }
+
+// Ключове от стари версии, които вече не се използват
+['misho_hidden_txn_counts', 'misho_txns', 'misho_checks'].forEach(lsRemove);
+
 var txns = [];
-var remoteTxns = [];
-var pendingTxns = JSON.parse(localStorage.getItem("misho_pending_txns") || "[]");
-var hiddenTxnCounts = {};
-localStorage.removeItem("misho_hidden_txn_counts");
-var checks = JSON.parse(localStorage.getItem("misho_checks") || "{}");
-var prices = JSON.parse(localStorage.getItem("misho_prices") || "{}");
+var remoteTxns = [];            // JOURNAL от Sheets (или кешираното му копие)
+var journalSource = 'snapshot'; // 'sheets' | 'cache' | 'snapshot'
+var journalAsOf = null;
+var settingsSource = 'default'; // 'sheets' | 'cache' | 'default'
+var pendingTxns = lsGet(LS_KEYS.pending, []);
+if (!Array.isArray(pendingTxns)) pendingTxns = [];
+var missingSnapshotTxns = [];
+var checks = lsGet(LS_KEYS.checks, {}) || {};
+var priceStore = loadPriceStore();
 var assetMeta = buildMetaFromRows(DEFAULT_SETTINGS);
 var recentSubmissionHash = null;
+var isLoading = false, reloadQueued = false, isDeleting = false, isSyncingPending = false, isFetchingLive = false;
+var growthChartInstance = null;
 
+// ── HELPERS ─────────────────────────────────────────────────────────────────
 function el(id) { return document.getElementById(id); }
-function fmtEUR(n) { return Number(n || 0).toLocaleString("bg-BG", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " EUR"; }
-function fmtPct(n) { return (Number(n || 0) * 100).toFixed(1) + "%"; }
-function fmtNumber(n, max) { return Number(n || 0).toLocaleString("bg-BG", { minimumFractionDigits: 0, maximumFractionDigits: max == null ? 2 : max }); }
-function todayISO() {
-  var d = new Date();
-  var mm = String(d.getMonth() + 1).padStart(2, "0");
-  var dd = String(d.getDate()).padStart(2, "0");
-  return d.getFullYear() + "-" + mm + "-" + dd;
+function pad2(n) { return String(n).padStart(2, '0'); }
+function fmtEUR(n) { return Number(n || 0).toLocaleString('bg-BG', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' EUR'; }
+function fmtNumber(n, max) { return Number(n || 0).toLocaleString('bg-BG', { minimumFractionDigits: 0, maximumFractionDigits: max == null ? 2 : max }); }
+function fmtPct(ratio, digits) { return (Number(ratio || 0) * 100).toFixed(digits == null ? 1 : digits) + '%'; }
+function fmtSignedEUR(n) {
+  var r = Math.round(Number(n || 0));
+  return (r > 0 ? '+' : r < 0 ? '-' : '') + fmtEUR(Math.abs(r));
+}
+function fmtSignedPct(ratio) {
+  var v = Number(ratio || 0) * 100;
+  return (v >= 0.05 ? '+' : v <= -0.05 ? '-' : '') + Math.abs(v).toFixed(1) + '%';
+}
+function pnlColor(n) { return n >= 0.5 ? 'var(--green)' : n <= -0.5 ? 'var(--red)' : 'var(--sub)'; }
+function isoDate(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function todayISO() { return isoDate(new Date()); }
+function fmtDateTime(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  return d.toLocaleDateString('bg-BG') + ' ' + d.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
 }
 function escapeHtml(v) {
-  return String(v == null ? "" : v)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
-function getColor(meta) { return (meta && meta.color) || TYPE_COLORS[(meta && meta.type) || "Other"] || "#94A3B8"; }
-function isPositiveAction(action) { return action === "Купи" || action === "Спести"; }
+function isPositiveAction(action) { return action === 'Купи' || action === 'Спести'; }
 function normalizeAction(raw) {
-  var a = String(raw || "").trim();
-  if (a === "Buy" || a === "BUY") return "Купи";
-  if (a === "Saving" || a === "SAVE" || a === "SAVING") return "Спести";
-  if (a === "Sell" || a === "SELL") return "Продай";
-  if (a === "Withdraw" || a === "WITHDRAW") return "Изтегли";
+  var a = String(raw || '').trim();
+  if (a === 'Buy' || a === 'BUY') return 'Купи';
+  if (a === 'Saving' || a === 'SAVE' || a === 'SAVING') return 'Спести';
+  if (a === 'Sell' || a === 'SELL') return 'Продай';
+  if (a === 'Withdraw' || a === 'WITHDRAW') return 'Изтегли';
   return a;
 }
 function toSheetAction(action) {
-  if (action === "Купи") return "Buy";
-  if (action === "Спести") return "Saving";
-  if (action === "Продай") return "Sell";
-  return "Withdraw";
+  if (action === 'Купи') return 'Buy';
+  if (action === 'Спести') return 'Saving';
+  if (action === 'Продай') return 'Sell';
+  return 'Withdraw';
 }
 function parseNumber(v, fallback) {
-  if (v == null || v === "") return fallback == null ? 0 : fallback;
-  var num = typeof v === "number" ? v : parseFloat(String(v).replace(",", "."));
+  if (v == null || v === '') return fallback == null ? 0 : fallback;
+  var num = typeof v === 'number' ? v : parseFloat(String(v).replace(/[\s ]/g, '').replace(',', '.'));
   return isNaN(num) ? (fallback == null ? 0 : fallback) : num;
 }
 function parseDateValue(value) {
@@ -604,215 +731,280 @@ function parseDateValue(value) {
   if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
   var s = String(value).trim();
   if (!s) return null;
-  var m1 = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  var m1 = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/);
   if (m1) return new Date(Number(m1[3]), Number(m1[2]) - 1, Number(m1[1]));
-  var m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  // Пълен ISO timestamp (Apps Script сериализира датите в UTC, напр. "2026-03-14T22:00:00.000Z").
+  // Взимаме локалната дата, иначе българските дати се изместват с ден назад.
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    var dt = new Date(s);
+    if (!isNaN(dt.getTime())) return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+  }
+  var m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (m2) return new Date(Number(m2[1]), Number(m2[2]) - 1, Number(m2[3]));
   var d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
 function formatDateDisplay(value) {
   var d = parseDateValue(value);
-  return d ? d.toLocaleDateString("bg-BG") : String(value || "");
+  return d ? d.toLocaleDateString('bg-BG') : String(value || '');
 }
 function dateSortValue(value) {
   var d = parseDateValue(value);
   return d ? d.getTime() : 0;
 }
 function txnSignature(t) {
-  return [formatDateDisplay(t.date), t.action, t.ticker, Number(t.qty).toFixed(8), Number(t.price).toFixed(8), String(t.note || "").trim()].join("|");
+  return [formatDateDisplay(t.date), t.action, t.ticker, Number(t.qty).toFixed(8), Number(t.price).toFixed(8), String(t.note || '').trim()].join('|');
 }
-function currentYear() { return new Date().getFullYear(); }
+function downloadFile(filename, content, mime) {
+  var blob = new Blob([content], { type: mime });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
 
+// ── SETTINGS ────────────────────────────────────────────────────────────────
 function buildMetaFromRows(rows) {
   var map = {};
   if (!rows || rows.length < 2) return map;
-  var header = rows[0].map(function(c){ return String(c || "").trim().toLowerCase(); });
-  var iTicker = header.indexOf("ticker");
-  var iName = header.indexOf("asset name");
-  var iType = header.indexOf("type");
-  var iTarget = header.findIndex(function(c){ return c.indexOf("target") >= 0; });
-  var iPrice = header.findIndex(function(c){ return c.indexOf("price") >= 0; });
+  var header = rows[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
+  var iTicker = header.indexOf('ticker'); if (iTicker < 0) iTicker = 0;
+  var iName = header.indexOf('asset name');
+  var iType = header.indexOf('type');
+  var iTarget = header.findIndex(function(c){ return c.indexOf('target') >= 0; });
+  var iPrice = header.findIndex(function(c){ return c.indexOf('price') >= 0; });
   rows.slice(1).forEach(function(row) {
-    var ticker = String(row[iTicker] || "").trim().toUpperCase();
+    if (!row) return;
+    var ticker = String(row[iTicker] || '').trim().toUpperCase();
     if (!ticker) return;
     var override = DISPLAY_OVERRIDES[ticker] || {};
-    var type = String(row[iType] || "Other").trim() || "Other";
+    var name = String((iName >= 0 && row[iName]) || ticker);
+    var type = String((iType >= 0 && row[iType]) || 'Other').trim() || 'Other';
+    var target = iTarget >= 0 ? parseNumber(row[iTarget], 0) : 0;
+    if (target > 1) target = target / 100; // "15" или "15%" → 0.15
+    var sheetPrice = iPrice >= 0 ? parseNumber(row[iPrice], 0) : 0;
     map[ticker] = {
       ticker: ticker,
-      label: override.label || String(row[iName] || ticker),
-      rawLabel: String(row[iName] || ticker),
+      label: override.label || name,
+      rawLabel: name,
       type: type,
-      targetPct: parseNumber(row[iTarget], 0),
-      price: parseNumber(row[iPrice], 1),
+      targetPct: target,
+      price: sheetPrice > 0 ? sheetPrice : 1,
+      sheetPrice: sheetPrice,
       color: override.color || TYPE_COLORS[type] || TYPE_COLORS.Other
     };
   });
   return map;
 }
 
+// SETTINGS от Sheets → assetMeta, плюс часа от колона "Price updated" (пише я LivePrices.gs)
+function buildMetaFromSettings(rawRows) {
+  var meta = buildMetaFromRows(mergeSettingsRows(DEFAULT_SETTINGS, rawRows));
+  if (!rawRows || rawRows.length < 2) return meta;
+  var h = rawRows[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
+  var iT = h.indexOf('ticker'), iU = h.indexOf('price updated');
+  if (iT < 0 || iU < 0) return meta;
+  rawRows.slice(1).forEach(function(row) {
+    var t = String((row && row[iT]) || '').trim().toUpperCase();
+    var raw = row && row[iU];
+    if (!meta[t] || !raw) return;
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) d = parseDateValue(raw);
+    if (d && !isNaN(d.getTime())) meta[t].priceUpdated = d.getTime();
+  });
+  return meta;
+}
+
+// Подрежда редовете от SETTINGS по колоните на DEFAULT_SETTINGS, независимо от реда им в Sheets.
 function mergeSettingsRows(defaultRows, remoteRows) {
   if (!remoteRows || remoteRows.length < 2) return defaultRows;
-  var merged = [];
-  var header = (defaultRows[0] || remoteRows[0] || []).slice();
-  merged.push(header);
+  var defHeader = defaultRows[0].map(function(c){ return String(c).trim().toLowerCase(); });
+  var remHeader = (remoteRows[0] || []).map(function(c){ return String(c || '').trim().toLowerCase(); });
+  var colMap = defHeader.map(function(name) {
+    var i = remHeader.indexOf(name);
+    if (i >= 0) return i;
+    var key = name.indexOf('target') >= 0 ? 'target' : name.indexOf('price') >= 0 ? 'price' : null;
+    return key ? remHeader.findIndex(function(c){ return c.indexOf(key) >= 0; }) : -1;
+  });
+  var iTicker = colMap[0] >= 0 ? colMap[0] : 0;
+  var defaultsByTicker = {};
+  defaultRows.slice(1).forEach(function(row){ defaultsByTicker[String(row[0]).toUpperCase()] = row; });
 
-  var remoteByTicker = {};
+  var merged = [defaultRows[0].slice()];
+  var seen = {};
   remoteRows.slice(1).forEach(function(row) {
-    var ticker = String((row && row[0]) || "").trim().toUpperCase();
-    if (!ticker) return;
-    remoteByTicker[ticker] = row.slice();
+    if (!row) return;
+    var ticker = String(row[iTicker] || '').trim().toUpperCase();
+    if (!ticker || seen[ticker]) return;
+    seen[ticker] = true;
+    var def = defaultsByTicker[ticker] || [];
+    merged.push(colMap.map(function(ci, j) {
+      if (j === 0) return ticker;
+      var v = ci >= 0 ? row[ci] : undefined;
+      return (v === undefined || v === null || v === '') ? def[j] : v;
+    }));
   });
-
   defaultRows.slice(1).forEach(function(row) {
-    var ticker = String((row && row[0]) || "").trim().toUpperCase();
-    if (!ticker) return;
-    merged.push((remoteByTicker[ticker] || row).slice ? (remoteByTicker[ticker] || row).slice() : (remoteByTicker[ticker] || row));
-    delete remoteByTicker[ticker];
+    if (!seen[String(row[0]).toUpperCase()]) merged.push(row.slice());
   });
-
-  Object.keys(remoteByTicker).forEach(function(ticker) {
-    merged.push(remoteByTicker[ticker].slice ? remoteByTicker[ticker].slice() : remoteByTicker[ticker]);
-  });
-
   return merged;
 }
 
-function normalizeTxn(raw) {
+// ── PRICES ──────────────────────────────────────────────────────────────────
+// Всяка цена пази стойност, време и източник. Печели последната промяна:
+// нова цена в SETTINGS, ръчно въведена цена или live цена.
+function loadPriceStore() {
+  var store = lsGet(LS_KEYS.prices, null);
+  if (store && typeof store === 'object') return store;
+  store = {};
+  var legacy = lsGet(LS_KEYS.legacyPrices, {}) || {};
+  Object.keys(legacy).forEach(function(t) {
+    var v = parseNumber(legacy[t], 0);
+    if (v > 0) store[t] = { value: v, ts: 0, source: 'local' };
+  });
+  lsSet(LS_KEYS.prices, store);
+  return store;
+}
+function savePriceStore() { lsSet(LS_KEYS.prices, priceStore); }
+function setPrice(t, value, source) { priceStore[t] = { value: value, ts: Date.now(), source: source }; }
+function getPriceInfo(t) { return priceStore[t] && priceStore[t].value > 0 ? priceStore[t] : null; }
+function getPrice(t) {
+  var info = getPriceInfo(t);
+  if (info) return info.value;
+  return (assetMeta[t] && assetMeta[t].price) || 1;
+}
+function priceSourceLabel(t) {
+  var info = getPriceInfo(t);
+  if (!info) return 'по подразбиране';
+  var names = { live: 'live', sheets: 'SETTINGS', manual: 'ръчно', local: 'локално' };
+  return (names[info.source] || info.source) + (info.ts ? ' • ' + fmtDateTime(info.ts) : '');
+}
+// Цена от SETTINGS се прилага, когато е нова или е променена в Sheets.
+function applySettingsPrices(meta) {
+  var seen = lsGet(LS_KEYS.settingsSeen, {}) || {};
+  Object.keys(meta).forEach(function(t) {
+    var sp = meta[t].sheetPrice;
+    if (!(sp > 0)) return;
+    if (seen[t] !== sp) {
+      setPrice(t, sp, 'sheets');
+      if (meta[t].priceUpdated) priceStore[t].ts = meta[t].priceUpdated;
+      seen[t] = sp;
+    }
+  });
+  lsSet(LS_KEYS.settingsSeen, seen);
+  savePriceStore();
+}
+
+// ── TRANSACTIONS ────────────────────────────────────────────────────────────
+function normalizeTxn(raw, source) {
   if (!raw) return null;
-  var ticker = String(raw.ticker || "").trim().toUpperCase();
+  var ticker = String(raw.ticker || '').trim().toUpperCase();
   var qty = parseNumber(raw.qty, 0);
   if (!ticker || qty <= 0) return null;
   return {
-    date: raw.date || "",
+    date: raw.date || '',
     action: normalizeAction(raw.action),
     ticker: ticker,
     qty: qty,
     price: parseNumber(raw.price, 1),
     fee: parseNumber(raw.fee, 0),
-    note: String(raw.note || "").trim()
+    note: String(raw.note || '').trim(),
+    sheetRowIndex: raw.sheetRowIndex || null,
+    source: source || raw.source || 'snapshot'
   };
 }
-
-function buildTxnIndex(list) {
+function stripTxn(t) {
+  return { date: t.date, action: t.action, ticker: t.ticker, qty: t.qty, price: t.price, fee: t.fee, note: t.note };
+}
+function snapshotTxns() {
+  return DEFAULT_TXNS.map(function(r){ return normalizeTxn(r, 'snapshot'); }).filter(Boolean);
+}
+function countSignatures(list) {
   var counts = {};
-  var examples = {};
-  (list || []).forEach(function(raw) {
-    var tx = normalizeTxn(raw);
-    if (!tx) return;
-    var sig = txnSignature(tx);
-    counts[sig] = (counts[sig] || 0) + 1;
-    if (!examples[sig]) examples[sig] = [];
-    examples[sig].push(tx);
-  });
-  return { counts: counts, examples: examples };
+  list.forEach(function(t){ var s = txnSignature(t); counts[s] = (counts[s] || 0) + 1; });
+  return counts;
 }
-
-function persistPendingTxns() {
-  localStorage.setItem("misho_pending_txns", JSON.stringify(pendingTxns));
-}
-
-function persistHiddenTxnCounts() {
-  localStorage.setItem("misho_hidden_txn_counts", JSON.stringify(hiddenTxnCounts));
-}
-
-function clearOneHiddenSignature(sig) {
-  if (!hiddenTxnCounts[sig]) return;
-  hiddenTxnCounts[sig] -= 1;
-  if (hiddenTxnCounts[sig] <= 0) delete hiddenTxnCounts[sig];
-  persistHiddenTxnCounts();
-}
-
-function countSignatureAcrossSources(sig) {
-  var indexDefault = buildTxnIndex(DEFAULT_TXNS);
-  var indexRemote = buildTxnIndex(remoteTxns);
-  var indexPending = buildTxnIndex(pendingTxns);
-  return (indexDefault.counts[sig] || 0) + (indexRemote.counts[sig] || 0) + (indexPending.counts[sig] || 0);
-}
-
-function removeOnePendingBySignature(sig) {
-  var removed = false;
-  pendingTxns = (pendingTxns || []).filter(function(raw) {
-    if (removed) return true;
-    var tx = normalizeTxn(raw);
-    if (!tx) return true;
-    if (txnSignature(tx) === sig) {
-      removed = true;
-      return false;
-    }
+// Елементите от `list`, които ги няма в `base` (с отчитане на броя повторения)
+function subtractBySignature(list, base) {
+  var avail = countSignatures(base);
+  return list.filter(function(t) {
+    var s = txnSignature(t);
+    if (avail[s] > 0) { avail[s] -= 1; return false; }
     return true;
   });
-  if (removed) persistPendingTxns();
-  return removed;
 }
 
-function applyHiddenTxns(list) {
-  var hidden = Object.assign({}, hiddenTxnCounts || {});
-  var ordered = (list || []).slice().sort(function(a, b) {
-    return dateSortValue(b.date) - dateSortValue(a.date) || txnSignature(a).localeCompare(txnSignature(b), 'bg');
-  });
+function parseJournal(rows, source) {
+  if (!rows || rows.length < 2) return [];
+  var h = rows[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
+  var iDate   = h.indexOf('date');     if (iDate < 0) iDate = 0;
+  var iAction = h.indexOf('action');   if (iAction < 0) iAction = 1;
+  var iTicker = h.indexOf('ticker');   if (iTicker < 0) iTicker = 3;
+  var iQty    = h.indexOf('quantity'); if (iQty < 0) iQty = 4;
+  var iPrice  = h.indexOf('price');    if (iPrice < 0) iPrice = 5;
+  var iFee    = h.indexOf('fee');      if (iFee < 0) iFee = 6;
+  var iNote   = h.indexOf('notes');    if (iNote < 0) iNote = 8;
 
-  var kept = [];
-  ordered.forEach(function(raw) {
-    var tx = normalizeTxn(raw);
-    if (!tx) return;
-    var sig = txnSignature(tx);
-    if (hidden[sig] && hidden[sig] > 0) {
-      hidden[sig] -= 1;
-      return;
-    }
-    kept.push(tx);
-  });
-
-  return kept.map(function(tx, idx) {
-    var cloned = Object.assign({}, tx);
-    cloned.id = idx + 1;
-    return cloned;
-  });
+  return rows.slice(1).map(function(row, idx) {
+    if (!row) return null;
+    return normalizeTxn({
+      date: row[iDate],
+      action: row[iAction],
+      ticker: row[iTicker],
+      qty: row[iQty],
+      price: row[iPrice],
+      fee: row[iFee],
+      note: row[iNote],
+      sheetRowIndex: idx + 2 // ред 1 е заглавието
+    }, source);
+  }).filter(Boolean);
 }
 
-function mergeTxnSources(snapshotTxns, remoteJournalTxns, pendingJournalTxns) {
-  var snapshot = buildTxnIndex(snapshotTxns || []);
-  var remote = buildTxnIndex(remoteJournalTxns || []);
-  var pending = buildTxnIndex(pendingJournalTxns || []);
-  var sigs = {};
+function persistPendingTxns() { lsSet(LS_KEYS.pending, pendingTxns); }
 
-  [snapshot, remote, pending].forEach(function(index) {
-    Object.keys(index.counts).forEach(function(sig) { sigs[sig] = true; });
+// Махаме от локалните записи тези, които вече ги има в Sheets.
+function reconcilePending() {
+  if (!pendingTxns.length) return;
+  var pend = pendingTxns.map(function(r){ return normalizeTxn(r, 'pending'); }).filter(Boolean);
+  var remaining = subtractBySignature(pend, remoteTxns);
+  pendingTxns = remaining.map(stripTxn);
+  persistPendingTxns();
+}
+
+// Записи от вградения snapshot, които ги няма в Sheets (освен игнорираните).
+function computeMissingSnapshot() {
+  var missing = subtractBySignature(snapshotTxns(), remoteTxns);
+  var dismissed = Object.assign({}, lsGet(LS_KEYS.snapshotDismissed, {}) || {});
+  missingSnapshotTxns = missing.filter(function(t) {
+    var s = txnSignature(t);
+    if (dismissed[s] > 0) { dismissed[s] -= 1; return false; }
+    return true;
   });
-
-  var merged = [];
-  Object.keys(sigs).forEach(function(sig) {
-    var keepCount = Math.max(snapshot.counts[sig] || 0, remote.counts[sig] || 0, pending.counts[sig] || 0);
-    var examples = (remote.examples[sig] && remote.examples[sig].length ? remote.examples[sig]
-      : snapshot.examples[sig] && snapshot.examples[sig].length ? snapshot.examples[sig]
-      : pending.examples[sig] || []);
-    var exemplar = examples[0];
-    if (!exemplar) return;
-    for (var i = 0; i < keepCount; i += 1) {
-      merged.push(Object.assign({}, exemplar));
-    }
-  });
-
-  return applyHiddenTxns(merged);
 }
 
 function rebuildTransactions() {
-  txns = mergeTxnSources(DEFAULT_TXNS, remoteTxns, pendingTxns);
-  localStorage.setItem("misho_txns", JSON.stringify(txns));
+  var base = journalSource === 'snapshot' ? snapshotTxns() : remoteTxns.slice();
+  var pending = pendingTxns.map(function(r){ return normalizeTxn(r, 'pending'); }).filter(Boolean);
+  txns = base.concat(pending)
+    .sort(function(a, b){ return dateSortValue(b.date) - dateSortValue(a.date); })
+    .map(function(t, i){ var c = Object.assign({}, t); c.id = i + 1; return c; });
 }
 
-function mergePricesFromMeta(meta) {
-  Object.keys(meta).forEach(function(t) {
-    if (!(t in prices) || !prices[t]) prices[t] = meta[t].price || 1;
-  });
+function lastTxnDate() {
+  var best = null, bestTs = 0;
+  txns.forEach(function(t){ var ts = dateSortValue(t.date); if (ts > bestTs) { bestTs = ts; best = t.date; } });
+  return best;
 }
 
 function populateTickerSelects() {
   var options = Object.keys(assetMeta)
     .sort(function(a,b){ return (assetMeta[a].label || a).localeCompare(assetMeta[b].label || b, 'bg'); })
     .map(function(t){
-      return '<option value="' + t + '">' + escapeHtml(assetMeta[t].label) + ' (' + t + ')</option>';
+      return '<option value="' + escapeHtml(t) + '">' + escapeHtml(assetMeta[t].label) + ' (' + escapeHtml(t) + ')</option>';
     }).join('');
   el('f-ticker').innerHTML = options;
   renderFilterOptions();
@@ -823,7 +1015,7 @@ function renderFilterOptions() {
   var opts = ['<option value="ALL">Всички</option>'].concat(
     Object.keys(assetMeta)
       .sort(function(a,b){ return (assetMeta[a].label || a).localeCompare(assetMeta[b].label || b, 'bg'); })
-      .map(function(t){ return '<option value="' + t + '">' + escapeHtml(t) + '</option>'; })
+      .map(function(t){ return '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>'; })
   ).join('');
   el('filter-ticker').innerHTML = opts;
   if ([].slice.call(el('filter-ticker').options).some(function(o){ return o.value === current; })) {
@@ -831,101 +1023,127 @@ function renderFilterOptions() {
   }
 }
 
-function parseJournal(rows) {
-  if (!rows || rows.length < 2) return [];
-  var h = rows[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
-  var iDate   = h.indexOf('date'); if (iDate < 0) iDate = 0;
-  var iAction = h.indexOf('action'); if (iAction < 0) iAction = 1;
-  var iTicker = h.indexOf('ticker'); if (iTicker < 0) iTicker = 3;
-  var iQty    = h.indexOf('quantity'); if (iQty < 0) iQty = 4;
-  var iPrice  = h.indexOf('price'); if (iPrice < 0) iPrice = 5;
-  var iFee    = h.indexOf('fee'); if (iFee < 0) iFee = 6;
-  var iNote   = h.indexOf('notes'); if (iNote < 0) iNote = 8;
+// ── SHEETS API ──────────────────────────────────────────────────────────────
+async function fetchJSON(action, extra) {
+  var res = await fetch(SCRIPT_URL + '?action=' + action + (extra || ''));
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  var json = await res.json();
+  if (!json || !json.ok) throw new Error((json && json.error) || 'Невалиден отговор');
+  return json;
+}
+function buildSheetRow(t) {
+  var meta = assetMeta[t.ticker];
+  var type = meta ? meta.type : '';
+  var category = type === 'Cash' ? 'Personal' : type === 'Gold' ? 'Other' : 'Invested';
+  var gross = t.qty * t.price;
+  var fee = t.fee || 0;
+  var total = isPositiveAction(t.action) ? -(gross + fee) : (gross - fee);
+  var d = parseDateValue(t.date);
+  return [d ? isoDate(d) : t.date, toSheetAction(t.action), category, t.ticker, t.qty, t.price, fee, total, t.note || ''];
+}
+function appendRowToSheets(row) {
+  return fetchJSON('appendJournal', '&row=' + encodeURIComponent(JSON.stringify(row)));
+}
 
-  return rows.slice(1).map(function(row, idx) {
-    var ticker = String(row[iTicker] || '').trim().toUpperCase();
-    var qty = parseNumber(row[iQty], 0);
-    if (!ticker || qty <= 0) return null;
-    return {
-      id: idx + 1,
-      sheetRowIndex: idx + 2, // row 1 = header, data starts at row 2
-      date: row[iDate],
-      action: normalizeAction(row[iAction]),
-      ticker: ticker,
-      qty: qty,
-      price: parseNumber(row[iPrice], 1),
-      fee: parseNumber(row[iFee], 0),
-      note: String(row[iNote] || '').trim()
-    };
-  }).filter(Boolean);
+function bootstrapFromCache() {
+  var sc = lsGet(LS_KEYS.settingsCache, null);
+  if (sc && Array.isArray(sc.rows)) {
+    var meta = buildMetaFromSettings(sc.rows);
+    if (Object.keys(meta).length) { assetMeta = meta; settingsSource = 'cache'; }
+  }
+  var jc = lsGet(LS_KEYS.journalCache, null);
+  if (jc && Array.isArray(jc.rows)) {
+    remoteTxns = parseJournal(jc.rows, 'cache');
+    journalSource = 'cache';
+    journalAsOf = jc.ts || null;
+  }
 }
 
 async function loadFromSheets() {
+  if (isLoading) { reloadQueued = true; return; }
+  isLoading = true;
+  el('refresh-btn').disabled = true;
   setSyncStatus('loading', 'Свързване с Google Sheets...');
-  var settingsRows = DEFAULT_SETTINGS;
-  var settingsLoaded = false;
-  var journalLoaded = false;
-  var loadErrors = [];
-
   try {
-    var settingsRes = await fetch(SCRIPT_URL + '?action=getSettings');
-    if (!settingsRes.ok) throw new Error('HTTP ' + settingsRes.status);
-    var settingsJson = await settingsRes.json();
-    if (settingsJson.ok && settingsJson.data && settingsJson.data.length) {
-      settingsRows = mergeSettingsRows(DEFAULT_SETTINGS, settingsJson.data);
-      settingsLoaded = true;
-    }
-  } catch (err) {
-    loadErrors.push('Settings');
-  }
+    var results = await Promise.allSettled([fetchJSON('getSettings'), fetchJSON('getJournal')]);
+    var settingsRes = results[0].status === 'fulfilled' ? results[0].value : null;
+    var journalRes = results[1].status === 'fulfilled' ? results[1].value : null;
 
-  try {
-    var journalRes = await fetch(SCRIPT_URL + '?action=getJournal');
-    if (!journalRes.ok) throw new Error('HTTP ' + journalRes.status);
-    var journalJson = await journalRes.json();
-    if (journalJson.ok && journalJson.data) {
-      remoteTxns = parseJournal(journalJson.data);
-      journalLoaded = true;
+    var newMeta = null;
+    if (settingsRes && Array.isArray(settingsRes.data) && settingsRes.data.length > 1) {
+      newMeta = buildMetaFromSettings(settingsRes.data);
+      settingsSource = 'sheets';
+      lsSet(LS_KEYS.settingsCache, { ts: Date.now(), rows: settingsRes.data });
     } else {
-      remoteTxns = [];
+      var sc = lsGet(LS_KEYS.settingsCache, null);
+      if (sc && Array.isArray(sc.rows)) { newMeta = buildMetaFromSettings(sc.rows); settingsSource = 'cache'; }
+      else settingsSource = 'default';
+    }
+
+    if (journalRes && Array.isArray(journalRes.data)) {
+      remoteTxns = parseJournal(journalRes.data, 'sheets');
+      journalSource = 'sheets';
+      journalAsOf = Date.now();
+      lsSet(LS_KEYS.journalCache, { ts: journalAsOf, rows: journalRes.data });
+    } else {
+      var jc = lsGet(LS_KEYS.journalCache, null);
+      if (jc && Array.isArray(jc.rows)) {
+        remoteTxns = parseJournal(jc.rows, 'cache');
+        journalSource = 'cache';
+        journalAsOf = jc.ts || null;
+      } else {
+        remoteTxns = [];
+        journalSource = 'snapshot';
+        journalAsOf = null;
+      }
+    }
+
+    assetMeta = newMeta && Object.keys(newMeta).length ? newMeta : buildMetaFromRows(DEFAULT_SETTINGS);
+    if (settingsSource === 'sheets') applySettingsPrices(assetMeta);
+
+    if (journalSource === 'sheets') { reconcilePending(); computeMissingSnapshot(); }
+    else missingSnapshotTxns = [];
+
+    populateTickerSelects();
+    rebuildTransactions();
+    isLoading = false;
+    renderAll();
+    updateSyncBadge();
+    if (settingsSource === 'sheets' || journalSource === 'sheets') {
+      loadTitle();
+      fetchLivePrices(); // живи цени при всяко зареждане (Apps Script ги кешира за 15 мин.)
+    } else {
+      el('sheet-name').textContent = 'офлайн режим';
+      el('sheet-name').style.color = '#f87171';
     }
   } catch (err) {
-    remoteTxns = [];
-    loadErrors.push('Journal');
-  }
-
-  assetMeta = buildMetaFromRows(settingsRows);
-  if (!Object.keys(assetMeta).length) assetMeta = buildMetaFromRows(DEFAULT_SETTINGS);
-  mergePricesFromMeta(assetMeta);
-  populateTickerSelects();
-
-  rebuildTransactions();
-  renderAll();
-
-  if (settingsLoaded || journalLoaded) {
-    var mode = [];
-    if (settingsLoaded) mode.push('SETTINGS');
-    if (journalLoaded) mode.push('JOURNAL');
-    setSyncStatus('ok', 'Синхронизирано: ' + mode.join(' + ') + ' • ' + new Date().toLocaleTimeString('bg-BG'));
-      // Fetch spreadsheet title
-      try {
-        var titleRes = await fetch(SCRIPT_URL + '?action=getTitle');
-        var titleJson = await titleRes.json();
-        if (titleJson.ok && titleJson.title) {
-          el('sheet-name').textContent = titleJson.title;
-          el('sheet-name').style.color = '#6EE7B7';
-        }
-      } catch(_) {
-        el('sheet-name').textContent = 'Investment_Plan_2028';
-        el('sheet-name').style.color = '#6EE7B7';
-      }
-  } else {
-    setSyncStatus('error', 'Работи от локалния Excel snapshot');
-    el('sheet-name').textContent = 'офлайн режим';
-    el('sheet-name').style.color = '#f87171';
+    setSyncStatus('error', 'Грешка при зареждане: ' + err.message);
+  } finally {
+    isLoading = false;
+    el('refresh-btn').disabled = false;
+    if (reloadQueued) { reloadQueued = false; loadFromSheets(); }
   }
 }
 
+async function loadTitle() {
+  try {
+    var json = await fetchJSON('getTitle');
+    el('sheet-name').textContent = json.title || 'Investment_Plan_2028';
+  } catch (_) {
+    el('sheet-name').textContent = 'Investment_Plan_2028';
+  }
+  el('sheet-name').style.color = '#6EE7B7';
+}
+
+function updateSyncBadge() {
+  var okS = settingsSource === 'sheets', okJ = journalSource === 'sheets';
+  var time = new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
+  if (okS && okJ) setSyncStatus('ok', 'Синхронизирано • ' + time);
+  else if (okS || okJ) setSyncStatus('warn', 'Частично: ' + (okJ ? 'JOURNAL ✓, SETTINGS ✗' : 'SETTINGS ✓, JOURNAL ✗'));
+  else setSyncStatus('error', journalSource === 'cache' ? 'Офлайн • кеш от ' + fmtDateTime(journalAsOf) : 'Офлайн • вграден snapshot');
+}
+
+// ── CALCULATIONS ────────────────────────────────────────────────────────────
 function calcPortfolio() {
   var holdings = {}, costBasis = {}, values = {}, duplicateMap = {}, duplicates = [];
   txns.forEach(function(tx) {
@@ -937,19 +1155,28 @@ function calcPortfolio() {
     if (duplicateMap[sig].length > 1) duplicates.push({ signature: sig, ids: duplicateMap[sig] });
   });
 
-  txns.forEach(function(tx) {
+  // Хронологично (покупките преди продажбите в един и същи ден), иначе продажбите се губят.
+  var chronological = txns.slice().sort(function(a, b) {
+    return dateSortValue(a.date) - dateSortValue(b.date)
+      || (isPositiveAction(a.action) ? 0 : 1) - (isPositiveAction(b.action) ? 0 : 1);
+  });
+  var realized = {};
+  chronological.forEach(function(tx) {
     var t = tx.ticker;
     if (!holdings[t]) { holdings[t] = 0; costBasis[t] = 0; }
+    if (realized[t] == null) realized[t] = 0;
     var qty = Number(tx.qty || 0);
     var price = Number(tx.price || 0);
     var fee = Number(tx.fee || 0);
-
-    if (tx.action === 'Купи' || tx.action === 'Спести') {
+    if (isPositiveAction(tx.action)) {
       holdings[t] += qty;
       costBasis[t] += qty * price + fee;
     } else {
       var avg = holdings[t] > 0 ? costBasis[t] / holdings[t] : 0;
       var removeQty = Math.min(qty, holdings[t]);
+      // Реализирана печалба = приходи от продажбата − такса − средната цена на продадените
+      var isCash = assetMeta[t] && assetMeta[t].type === 'Cash';
+      if (removeQty > 0 && !isCash) realized[t] += removeQty * price - fee - avg * removeQty;
       holdings[t] = Math.max(0, holdings[t] - removeQty);
       costBasis[t] = Math.max(0, costBasis[t] - (avg * removeQty));
     }
@@ -959,87 +1186,101 @@ function calcPortfolio() {
     if (holdings[t] == null) holdings[t] = 0;
     if (costBasis[t] == null) costBasis[t] = 0;
   });
-
-  Object.keys(holdings).forEach(function(t) {
-    values[t] = (holdings[t] || 0) * (prices[t] || (assetMeta[t] ? assetMeta[t].price : 1) || 1);
-  });
+  Object.keys(holdings).forEach(function(t) { values[t] = (holdings[t] || 0) * getPrice(t); });
 
   var totalValue = Object.keys(values).reduce(function(sum, t) { return sum + (values[t] || 0); }, 0);
-  var cappedValue = Object.keys(assetMeta).reduce(function(sum, t) {
-    var targetValue = TOTAL_GOAL * (assetMeta[t].targetPct || 0);
-    return sum + Math.min(values[t] || 0, targetValue);
-  }, 0);
 
-  var year = currentYear();
-  var ytdNet = txns.reduce(function(sum, tx) {
-    var d = parseDateValue(tx.date);
-    if (!d || d.getFullYear() !== year) return sum;
-    var gross = (tx.qty || 0) * (tx.price || 0);
-    return sum + (isPositiveAction(tx.action) ? gross : -gross);
+  // Печалба/загуба на инвестираните активи (кешът не участва)
+  var pnl = { cost: 0, value: 0, unrealized: 0, realized: 0, pct: 0 };
+  Object.keys(holdings).forEach(function(t) {
+    if (assetMeta[t] && assetMeta[t].type === 'Cash') return;
+    pnl.cost += costBasis[t] || 0;
+    pnl.value += values[t] || 0;
+    pnl.realized += realized[t] || 0;
+  });
+  pnl.unrealized = pnl.value - pnl.cost;
+  pnl.pct = pnl.cost > 0 ? pnl.unrealized / pnl.cost : 0;
+  var cappedValue = Object.keys(assetMeta).reduce(function(sum, t) {
+    return sum + Math.min(values[t] || 0, TOTAL_GOAL * (assetMeta[t].targetPct || 0));
   }, 0);
 
   var rebalanceAlerts = Object.keys(assetMeta).map(function(t) {
     var meta = assetMeta[t];
     var actualPct = totalValue > 0 ? (values[t] || 0) / totalValue : 0;
     var drift = actualPct - (meta.targetPct || 0);
-    return {
-      ticker: t,
-      label: meta.label,
-      color: meta.color,
-      targetPct: meta.targetPct || 0,
-      actualPct: actualPct,
-      drift: drift,
-      flag: Math.abs(drift) >= 0.05
-    };
+    return { ticker: t, label: meta.label, color: meta.color, targetPct: meta.targetPct || 0, actualPct: actualPct, drift: drift, flag: Math.abs(drift) >= 0.05 };
   }).sort(function(a,b){ return Math.abs(b.drift) - Math.abs(a.drift); });
 
   return {
     holdings: holdings,
     costBasis: costBasis,
+    realized: realized,
+    pnl: pnl,
     values: values,
     totalValue: totalValue,
-    cappedValue: cappedValue,
-    progressPct: TOTAL_GOAL > 0 ? Math.min(cappedValue / TOTAL_GOAL, 1) : 0,
-    ytdNet: ytdNet,
+    progressPct: TOTAL_GOAL > 0 ? totalValue / TOTAL_GOAL : 0,
+    balancedPct: TOTAL_GOAL > 0 ? Math.min(cappedValue / TOTAL_GOAL, 1) : 0,
     duplicates: duplicates,
     duplicateIdSet: duplicates.reduce(function(acc, d){ d.ids.forEach(function(id){ acc[id] = true; }); return acc; }, {}),
-    rebalanceAlerts: rebalanceAlerts,
-    biggestDrift: rebalanceAlerts.length ? rebalanceAlerts[0] : null
+    rebalanceAlerts: rebalanceAlerts
   };
 }
 
+// ── RENDER ──────────────────────────────────────────────────────────────────
 function renderAll() {
   var p = calcPortfolio();
+  renderDataBanner();
   renderKPI(p);
   renderTotalProgress(p);
+  renderForecast(p);
   renderAssets(p);
+  renderAllocation(p);
+  renderCalculator(p);
   renderAlerts(p);
   renderHoldings(p);
   renderJournal(p);
+  if (!el('tab-analysis').classList.contains('hidden')) renderAnalysis(p);
+}
+
+function renderDataBanner() {
+  var box = el('data-banner');
+  if (journalSource === 'sheets' || isLoading) { box.innerHTML = ''; return; }
+  var last = lastTxnDate();
+  var what = journalSource === 'cache'
+    ? 'последното копие от Sheets, запазено на ' + fmtDateTime(journalAsOf)
+    : 'вградените във файла данни';
+  box.innerHTML = '<div class="banner">'
+    + '<div><b>Няма връзка с Google Sheets.</b> Показвам ' + what
+    + (last ? ' (последна транзакция: ' + escapeHtml(formatDateDisplay(last)) + ')' : '')
+    + '. Промени, направени в Sheets след това, не се виждат.</div>'
+    + '<div class="mini-note">Ако проблемът продължава: в Apps Script отвори Deploy → Manage deployments и провери, че „Who has access“ е „Anyone“.</div>'
+    + '</div>';
 }
 
 function renderKPI(p) {
-  var etfTotal = Object.keys(assetMeta).reduce(function(sum, t) {
-    var type = assetMeta[t] ? assetMeta[t].type : '';
-    return sum + ((type === 'ETF' || type === 'Stocks') ? p.values[t] || 0 : 0);
-  }, 0);
+  var investTickers = Object.keys(assetMeta).filter(function(t) {
+    var type = assetMeta[t].type;
+    return type === 'ETF' || type === 'Stocks';
+  });
+  var etfTotal = investTickers.reduce(function(sum, t) { return sum + (p.values[t] || 0); }, 0);
   var gap = Math.max(TOTAL_GOAL - p.totalValue, 0);
-  // Monthly target: 2300 EUR/month invested
-  var monthlyTarget = 1150;
-  var currentMonth = new Date().getMonth();
-  var currentYearN = new Date().getFullYear();
+  var now = new Date();
   var investedThisMonth = txns.filter(function(t) {
     var d = parseDateValue(t.date);
-    return d && d.getFullYear() === currentYearN && d.getMonth() === currentMonth
-      && (t.action === 'Купи' || t.action === 'Спести') && t.ticker !== 'CASH';
+    return d && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
+      && isPositiveAction(t.action) && t.ticker !== 'CASH';
   }).reduce(function(sum, t) { return sum + (Number(t.qty) * Number(t.price)); }, 0);
-  var monthlyPct = Math.min((investedThisMonth / monthlyTarget) * 100, 100);
+  var monthlyPct = MONTHLY_TARGET > 0 ? Math.min((investedThisMonth / MONTHLY_TARGET) * 100, 100) : 0;
   var cards = [
-    { label:'Общо портфолио', value:fmtEUR(p.totalValue), sub:(p.progressPct * 100).toFixed(1) + '% от целта', color:'#6EE7B7' },
-    { label:'Остава до целта', value:fmtEUR(gap), sub:'спрямо 50 000 EUR', color:'#60A5FA' },
-    { label:'ETF + Акции', value:fmtEUR(etfTotal), sub:'EUNL+ZPRL+MIVA+XEON+STOCKS', color:'#34D399' },
-    { label:'Злато', value:fmtNumber(p.holdings.GOLD || 0, 0) + ' g', sub:fmtEUR(p.values.GOLD || 0), color:'#FCD34D' },
-    { label:'Инвестирано този месец', value:fmtEUR(investedThisMonth), sub:monthlyPct.toFixed(0) + '% от целта 1 150 EUR/мес', color: monthlyPct >= 100 ? '#6EE7B7' : monthlyPct >= 50 ? '#FCD34D' : '#F87171' }
+    { label: 'Общо портфолио', value: fmtEUR(p.totalValue), sub: fmtPct(p.progressPct) + ' от целта', color: '#6EE7B7' },
+    { label: 'Печалба / загуба', value: fmtSignedEUR(p.pnl.unrealized),
+      sub: fmtSignedPct(p.pnl.pct) + ' върху ' + fmtEUR(p.pnl.cost) + ' вложени (без кеша)'
+        + (Math.abs(p.pnl.realized) >= 0.5 ? ' • реализирана ' + fmtSignedEUR(p.pnl.realized) : ''),
+      color: p.pnl.unrealized <= -0.5 ? '#F87171' : '#6EE7B7' },
+    { label: 'Остава до целта', value: fmtEUR(gap), sub: 'спрямо ' + fmtEUR(TOTAL_GOAL), color: '#60A5FA' },
+    { label: 'ETF + Акции', value: fmtEUR(etfTotal), sub: investTickers.join(' · '), color: '#34D399' },
+    { label: 'Злато', value: fmtNumber(p.holdings.GOLD || 0, 0) + ' g', sub: fmtEUR(p.values.GOLD || 0), color: '#FCD34D' },
+    { label: 'Инвестирано този месец', value: fmtEUR(investedThisMonth), sub: monthlyPct.toFixed(0) + '% от целта ' + fmtEUR(MONTHLY_TARGET) + '/мес', color: monthlyPct >= 100 ? '#6EE7B7' : monthlyPct >= 50 ? '#FCD34D' : '#F87171' }
   ];
   el('kpi-grid').innerHTML = cards.map(function(k) {
     return '<div class="card" style="border:1px solid ' + k.color + '44">'
@@ -1054,9 +1295,10 @@ function renderKPI(p) {
 function renderTotalProgress(p) {
   el('goal-label').textContent = fmtEUR(TOTAL_GOAL);
   el('goal-progress-label').textContent = fmtEUR(p.totalValue);
-  el('goal-gap-label').textContent = 'Остават ' + fmtEUR(Math.max(TOTAL_GOAL - p.totalValue, 0));
-  el('total-pct').textContent = (p.progressPct * 100).toFixed(1) + '%';
-  el('total-bar').style.width = (p.progressPct * 100) + '%';
+  el('goal-gap-label').textContent = p.totalValue >= TOTAL_GOAL ? 'Целта е достигната' : 'Остават ' + fmtEUR(TOTAL_GOAL - p.totalValue);
+  el('total-pct').textContent = fmtPct(p.progressPct);
+  el('total-bar').style.width = Math.min(p.progressPct * 100, 100) + '%';
+  el('balanced-label').textContent = 'Балансиран напредък: ' + fmtPct(p.balancedPct) + ' (всеки актив се брои само до своя целеви дял)';
 }
 
 function renderAssets(p) {
@@ -1078,15 +1320,24 @@ function renderAssets(p) {
       + '</div>'
       + '<div class="progress-wrap"><div class="progress-fill" style="width:' + barPct + '%;background:' + info.color + (pct >= 100 ? ';box-shadow:0 0 8px ' + info.color + '88' : '') + '"></div></div>'
       + '<div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted);gap:8px">'
-        + '<span style="color:' + (pct >= 100 ? info.color : 'var(--muted)') + '">' + status + '</span>'
+        + '<span style="color:' + (pct >= 100 ? '#e2e8f0' : 'var(--muted)') + ';font-weight:' + (pct >= 100 ? '600' : '400') + '">' + status + '</span>'
         + '<span>' + (pct >= 100 ? ('+' + fmtEUR(val - targetValue) + ' над цел') : ('остава ' + fmtEUR(Math.max(targetValue - val, 0)))) + '</span></div>'
       + '</div>';
   }).join('');
 }
 
+function alertRow(kind, left, right) {
+  var styles = {
+    warn: 'background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.28)',
+    info: 'background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3)',
+    ok:   'background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.28)'
+  };
+  var colors = { warn: 'var(--yellow)', info: 'var(--blue)', ok: 'var(--green)' };
+  return '<div class="alert-row" style="' + styles[kind] + '"><span>' + left + '</span><span style="color:' + colors[kind] + '">' + right + '</span></div>';
+}
+
 function renderAlerts(p) {
   var html = '';
-  var hiddenCount = Object.keys(hiddenTxnCounts || {}).reduce(function(sum, sig) { return sum + (hiddenTxnCounts[sig] || 0); }, 0);
   var flagged = p.rebalanceAlerts.filter(function(a){ return a.flag; });
   if (flagged.length) {
     html += '<div class="alert-block"><div class="section-title">Ребаланс алерти</div>';
@@ -1103,23 +1354,39 @@ function renderAlerts(p) {
     html += '</div>';
   }
 
+  var data = '';
+  if (pendingTxns.length) {
+    data += '<div class="alert-row block" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3)">'
+      + '<div class="flex-sb" style="gap:12px;flex-wrap:wrap"><span>' + pendingTxns.length + ' транзакции са записани само в този браузър и ги няма в Sheets</span>'
+      + '<button class="btn-blue btn-sm" onclick="syncPendingTxns()"' + (isSyncingPending ? ' disabled' : '') + '>Изпрати в Sheets</button></div>'
+      + '<div class="mini-note">Маркирани са с „Локален“ в журнала.</div></div>';
+  }
   if (p.duplicates.length) {
-    html += '<div class="alert-block"><div class="section-title">Качество на данните</div>'
-      + '<div class="alert-row" style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.28)">'
-      + '<span>Открити са ' + p.duplicates.length + ' вероятни дублирани записа в JOURNAL</span>'
-      + '<span style="color:var(--yellow)">провери журнала</span>'
+    data += alertRow('warn', 'Открити са ' + p.duplicates.length + ' групи еднакви записа в журнала', 'провери журнала');
+  }
+  var targetSum = Object.keys(assetMeta).reduce(function(s, t){ return s + (assetMeta[t].targetPct || 0); }, 0);
+  if (Math.abs(targetSum - 1) > 0.005) {
+    data += alertRow('warn', 'Целевите дялове в SETTINGS са общо ' + fmtPct(targetSum) + ', а трябва да са 100%', 'провери SETTINGS');
+  }
+  if (missingSnapshotTxns.length) {
+    data += '<div class="alert-row block" style="background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.28)">'
+      + '<div>' + missingSnapshotTxns.length + ' записа от вградените данни ги няма в Sheets</div>'
+      + '<div class="mini-note">Ако са изтрити нарочно, натисни „Игнорирай“. Ако липсват по грешка, добави ги.</div>'
+      + (missingSnapshotTxns.length > 1 ? '<div class="alert-actions"><button class="btn-ghost btn-sm" onclick="dismissAllSnapshotTxns()">Игнорирай всички</button></div>' : '')
+      + '<div class="missing-list">'
+      + missingSnapshotTxns.map(function(t, i) {
+          return '<div class="missing-row"><span>' + escapeHtml(formatDateDisplay(t.date)) + ' • ' + escapeHtml(t.action) + ' ' + escapeHtml(t.ticker)
+            + ' ' + escapeHtml(fmtNumber(t.qty, 4)) + ' × ' + escapeHtml(fmtNumber(t.price, 2)) + ' EUR' + (t.note ? ' — ' + escapeHtml(t.note) : '') + '</span>'
+            + '<span style="display:flex;gap:6px"><button class="btn-ghost btn-sm" onclick="pushSnapshotTxn(' + i + ')">Добави в Sheets</button>'
+            + '<button class="btn-ghost btn-sm" onclick="dismissSnapshotTxn(' + i + ')">Игнорирай</button></span></div>';
+        }).join('')
       + '</div></div>';
   }
+  if (data) html += '<div class="alert-block"><div class="section-title">Качество на данните</div>' + data + '</div>';
 
-
-
-  if (!flagged.length && !p.duplicates.length && !hiddenCount) {
-    html = '<div class="alert-block"><div class="section-title">Статус</div>'
-      + '<div class="alert-row" style="background:rgba(110,231,183,0.08);border:1px solid rgba(110,231,183,0.28)">'
-      + '<span>Няма критични алерти</span><span style="color:var(--green)">OK</span>'
-      + '</div></div>';
+  if (!html) {
+    html = '<div class="alert-block"><div class="section-title">Статус</div>' + alertRow('ok', 'Няма критични алерти', 'OK') + '</div>';
   }
-
   el('alerts-section').innerHTML = html;
 }
 
@@ -1129,66 +1396,600 @@ function renderHoldings(p) {
     var info = assetMeta[ticker];
     var qty = p.holdings[ticker] || 0;
     var avgP = qty > 0 ? (p.costBasis[ticker] || 0) / qty : 0;
-    var curP = prices[ticker] || info.price || 1;
+    var curP = getPrice(ticker);
     var val = p.values[ticker] || 0;
     var actual = p.totalValue > 0 ? val / p.totalValue : 0;
     var target = info.targetPct || 0;
     var drift = actual - target;
     var driftCol = drift > 0.05 ? 'var(--red)' : drift < -0.05 ? 'var(--green)' : 'var(--sub)';
     var driftW = Math.abs(drift) > 0.05 ? '700' : '400';
+    var cost = p.costBasis[ticker] || 0;
+    var unreal = val - cost;
+    var pnlCell = info.type === 'Cash'
+      ? '<div style="font-size:13px;color:var(--muted)">—</div>'
+      : pnlCellHtml(unreal, cost > 0 ? unreal / cost : 0, p.realized[ticker] || 0, 'Вложено: ' + fmtEUR(cost));
     return '<div class="holdings-grid holdings-row" style="border-left-color:' + info.color + '">'
-      + '<div><div style="font-weight:600;font-size:14px">' + escapeHtml(info.label) + '</div><div style="font-size:11px;color:var(--muted);margin-top:2px">' + ticker + '</div></div>'
+      + '<div><div style="font-weight:600;font-size:14px">' + escapeHtml(info.label) + '</div><div style="font-size:11px;color:var(--muted);margin-top:2px">' + escapeHtml(ticker) + '</div></div>'
       + '<div style="font-size:13px">' + escapeHtml(fmtNumber(qty, 4)) + '</div>'
       + '<div style="font-size:13px">' + escapeHtml(fmtNumber(avgP, 2)) + ' EUR</div>'
-      + '<div style="font-size:13px">' + escapeHtml(fmtNumber(curP, 2)) + ' EUR</div>'
-      + '<div style="font-size:14px;font-weight:700;color:' + info.color + '">' + escapeHtml(fmtEUR(val)) + '</div>'
-      + '<div style="font-size:13px">' + ((target || 0) * 100).toFixed(0) + '%</div>'
+      + '<div style="font-size:13px" title="' + escapeHtml(priceSourceLabel(ticker)) + '">' + escapeHtml(fmtNumber(curP, 2)) + ' EUR</div>'
+      + '<div style="font-size:14px;font-weight:700;color:#f1f5f9">' + escapeHtml(fmtEUR(val)) + '</div>'
+      + pnlCell
+      + '<div style="font-size:13px">' + (target * 100).toFixed(0) + '%</div>'
       + '<div style="font-size:13px;font-weight:' + driftW + ';color:' + driftCol + '">' + (drift > 0 ? '+' : '') + (drift * 100).toFixed(1) + 'пп</div>'
       + '</div>';
   }).join('');
+
+  var targetSum = Object.keys(assetMeta).reduce(function(s, t){ return s + (assetMeta[t].targetPct || 0); }, 0);
+  el('holdings-rows').innerHTML += '<div class="holdings-grid holdings-row holdings-total">'
+    + '<div><div style="font-weight:700;font-size:14px">Общо</div><div style="font-size:11px;color:var(--muted);margin-top:2px">вложено без кеша: ' + escapeHtml(fmtEUR(p.pnl.cost)) + '</div></div>'
+    + '<div></div><div></div><div></div>'
+    + '<div style="font-size:14px;font-weight:800">' + escapeHtml(fmtEUR(p.totalValue)) + '</div>'
+    + pnlCellHtml(p.pnl.unrealized, p.pnl.pct, p.pnl.realized, 'Без кеша. Вложено: ' + fmtEUR(p.pnl.cost) + ', стойност: ' + fmtEUR(p.pnl.value))
+    + '<div style="font-size:13px">' + (targetSum * 100).toFixed(0) + '%</div><div></div>'
+    + '</div>';
+}
+
+function pnlCellHtml(unrealized, pct, realized, title) {
+  return '<div title="' + escapeHtml(title) + '">'
+    + '<div style="font-size:13px;font-weight:700;color:' + pnlColor(unrealized) + '">' + escapeHtml(fmtSignedEUR(unrealized)) + '</div>'
+    + '<div style="font-size:11px;color:var(--muted)">' + fmtSignedPct(pct)
+    + (Math.abs(realized) >= 0.5 ? ' • реал. ' + escapeHtml(fmtSignedEUR(realized)) : '') + '</div>'
+    + '</div>';
 }
 
 function renderJournal(p) {
   p = p || calcPortfolio();
   renderFilterOptions();
   var filter = el('filter-ticker').value || 'ALL';
-  var filtered = txns
-    .filter(function(t){ return filter === 'ALL' || t.ticker === filter; })
-    .sort(function(a,b){ return dateSortValue(b.date) - dateSortValue(a.date); });
+  var filtered = txns.filter(function(t){ return filter === 'ALL' || t.ticker === filter; });
   el('txn-count').textContent = filtered.length + ' записа';
-  el('journal-rows').innerHTML = filtered.map(function(t, i) {
+  el('journal-rows').innerHTML = filtered.map(function(t) {
     var col = t.action === 'Купи' ? '#34D399' : t.action === 'Спести' ? 'var(--blue)' : 'var(--red)';
-    var duplicate = p.duplicateIdSet && p.duplicateIdSet[t.id];
-    // Find real index in txns array for delete
-    var realIdx = txns.indexOf(t);
+    var pills = [];
+    if (p.duplicateIdSet && p.duplicateIdSet[t.id]) pills.push('<span class="pill warn">Дубл.</span>');
+    if (t.source === 'pending') pills.push('<span class="pill local" title="Не е изпратен в Sheets">Локален</span>');
+    if (!pills.length) pills.push('<span class="pill dim">—</span>');
+    var feeText = t.fee ? ' • такса ' + fmtNumber(t.fee, 2) + ' EUR' : '';
     return '<div class="journal-grid journal-row">'
       + '<div style="font-size:12px;color:var(--sub)">' + escapeHtml(formatDateDisplay(t.date)) + '</div>'
       + '<div style="font-size:12px;font-weight:600;color:' + col + '">' + escapeHtml(t.action) + '</div>'
       + '<div style="font-weight:600">' + escapeHtml(t.ticker) + '</div>'
       + '<div>' + escapeHtml(fmtNumber(t.qty, 4)) + '</div>'
       + '<div>' + escapeHtml(fmtNumber(t.price, 2)) + ' EUR</div>'
-      + '<div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escapeHtml(t.note || '') + '</div>'
-      + '<div>' + (duplicate ? '<span class="pill warn">Дубл.</span>' : '<span class="pill dim">—</span>') + '</div>'
-      + '<button class="del-btn" onclick="deleteTxn(' + realIdx + ')">&#10005;</button>'
+      + '<div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + escapeHtml((t.note || '') + feeText) + '">' + escapeHtml(t.note || '') + escapeHtml(feeText) + '</div>'
+      + '<div class="flag-cell">' + pills.join('') + '</div>'
+      + '<button class="del-btn" onclick="deleteTxn(' + t.id + ')" aria-label="Изтрий записа" title="Изтрий">&#10005;</button>'
       + '</div>';
   }).join('');
 }
 
-function renderChecklist() {
-  el('checklist-grid').innerHTML = CHECKLIST_DATA.map(function(section) {
-    return '<div class="card" style="border:1px solid ' + section.color + '44">'
-      + '<div class="card-top" style="background:' + section.color + '"></div>'
-      + '<div style="font-size:14px;font-weight:700;color:' + section.color + ';margin-bottom:14px">' + escapeHtml(section.title) + '</div>'
-      + section.items.map(function(item, i) {
-        var key = section.title + '_' + i;
-        var done = !!checks[key];
-        return '<div class="check-item" onclick="toggleCheck(\'' + key + '\')">'
-          + '<div class="check-box' + (done ? ' checked' : '') + '"><span style="color:#0a0f1e;font-size:10px;font-weight:900">' + (done ? 'OK' : '') + '</span></div>'
-          + '<span class="check-text' + (done ? ' done' : '') + '">' + escapeHtml(item) + '</span>'
-          + '</div>';
-      }).join('')
+// ── ALLOCATION DONUT ────────────────────────────────────────────────────────
+var allocChart = null;
+var allocTickers = [];
+
+function allocationOrder() {
+  var known = ALLOCATION_ORDER.filter(function(t){ return assetMeta[t]; });
+  var extra = Object.keys(assetMeta).filter(function(t){ return known.indexOf(t) < 0; });
+  return known.concat(extra);
+}
+
+function setAllocActive(index) {
+  if (!allocChart) return;
+  var active = index == null ? [] : [{ datasetIndex: 0, index: index }];
+  allocChart.setActiveElements(active);
+  allocChart.tooltip.setActiveElements(active, { x: allocChart.width / 2, y: allocChart.height / 2 });
+  allocChart.update();
+  [].forEach.call(document.querySelectorAll('#alloc-list .alloc-row'), function(row) {
+    row.classList.toggle('active', index != null && row.dataset.index === String(index));
+  });
+}
+
+function renderAllocation(p) {
+  var list = el('alloc-list');
+  if (!list) return;
+  p = p || calcPortfolio();
+  allocTickers = allocationOrder();
+  var total = p.totalValue;
+  var shares = allocTickers.map(function(t){ return total > 0 ? (p.values[t] || 0) / total : 0; });
+  var targets = allocTickers.map(function(t){ return assetMeta[t].targetPct || 0; });
+  var scaleMax = Math.max.apply(null, shares.concat(targets).concat([0.01])) * 1.08;
+
+  el('alloc-center').innerHTML = '<div class="l">Общо</div><div class="v">' + escapeHtml(fmtEUR(total)) + '</div>'
+    + '<div class="s">' + allocTickers.length + ' актива</div>';
+
+  // Списъкът е подреден по реален дял (най-голям отгоре); data-index сочи сегмента в диаграмата
+  var rows = allocTickers.map(function(t, i){ return { t: t, i: i, share: shares[i], target: targets[i] }; })
+    .sort(function(a, b){ return b.share - a.share; });
+  list.innerHTML = rows.map(function(r) {
+    var meta = assetMeta[r.t];
+    var drift = r.share - r.target;
+    var driftCol = drift > 0.05 ? 'var(--red)' : drift < -0.05 ? 'var(--green)' : 'var(--muted)';
+    return '<div class="alloc-row" data-index="' + r.i + '">'
+      + '<span class="alloc-swatch" style="background:' + meta.color + '"></span>'
+      + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escapeHtml(meta.label) + '</span>'
+      + '<span class="alloc-track"><span class="alloc-fill" style="width:' + (r.share / scaleMax * 100).toFixed(2) + '%;background:' + meta.color + '"></span>'
+      + '<span class="alloc-tick" style="left:' + (r.target / scaleMax * 100).toFixed(2) + '%" title="Цел ' + fmtPct(r.target, 0) + '"></span></span>'
+      + '<span class="alloc-fig"><b>' + fmtPct(r.share) + '</b> <span class="t">/ цел ' + fmtPct(r.target, 0) + '</span> '
+      + '<span style="font-size:12px;color:' + driftCol + '">' + (drift > 0 ? '+' : '') + (drift * 100).toFixed(1) + ' п.п.</span></span>'
       + '</div>';
   }).join('');
+
+  if (typeof Chart === 'undefined') return;
+  var data = allocTickers.map(function(t){ return Math.max(0, Math.round((p.values[t] || 0) * 100) / 100); });
+  var colors = allocTickers.map(function(t){ return assetMeta[t].color; });
+  var labels = allocTickers.map(function(t){ return assetMeta[t].label; });
+  if (allocChart) {
+    allocChart.data.labels = labels;
+    allocChart.data.datasets[0].data = data;
+    allocChart.data.datasets[0].backgroundColor = colors;
+    allocChart.update('none');
+    return;
+  }
+  allocChart = new Chart(el('alloc-chart'), {
+    type: 'doughnut',
+    data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: '#0f172a', borderWidth: 2, hoverOffset: 6 }] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      layout: { padding: 6 },
+      animation: { duration: 300 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0b1222', borderColor: '#334155', borderWidth: 1, padding: 10,
+          titleFont: { family: 'Inter', size: 12 }, bodyFont: { family: 'Inter', size: 12 },
+          callbacks: {
+            label: function(ctx) {
+              var t = allocTickers[ctx.dataIndex];
+              var tot = ctx.dataset.data.reduce(function(s, v){ return s + v; }, 0);
+              var share = tot > 0 ? ctx.raw / tot : 0;
+              return ' ' + fmtEUR(ctx.raw) + ' • ' + fmtPct(share) + ' (цел ' + fmtPct(assetMeta[t] ? assetMeta[t].targetPct : 0, 0) + ')';
+            }
+          }
+        }
+      },
+      onHover: function(evt, elements) {
+        var idx = elements && elements.length ? elements[0].index : null;
+        [].forEach.call(document.querySelectorAll('#alloc-list .alloc-row'), function(row) {
+          row.classList.toggle('active', idx != null && row.dataset.index === String(idx));
+        });
+      }
+    }
+  });
+}
+
+function initAllocation() {
+  var list = el('alloc-list');
+  list.addEventListener('mouseover', function(e) {
+    var row = e.target.closest('.alloc-row');
+    if (row) setAllocActive(Number(row.dataset.index));
+  });
+  list.addEventListener('mouseleave', function(){ setAllocActive(null); });
+}
+
+// ── GOAL FORECAST ───────────────────────────────────────────────────────────
+// Проста сметка: днешна пазарна стойност + месечна вноска в края на всеки месец
+// (от следващия месец до срока), по желание с годишна доходност.
+var forecastPrefs = loadForecastPrefs();
+
+function loadForecastPrefs() {
+  var saved = lsGet(LS_KEYS.forecast, null);
+  if (!saved || typeof saved !== 'object') saved = {};
+  return {
+    monthly: saved.monthly != null ? parseNumber(saved.monthly, 0) : MONTHLY_TARGET,
+    returnPct: parseNumber(saved.returnPct, 0),
+    deadline: /^\d{4}-\d{2}$/.test(saved.deadline || '') ? saved.deadline : GOAL_DEADLINE
+  };
+}
+function saveForecastPrefs() { lsSet(LS_KEYS.forecast, forecastPrefs); }
+
+function addMonths(d, k) { return new Date(d.getFullYear(), d.getMonth() + k, 1); }
+function monthLabel(d) { return d.toLocaleDateString('bg-BG', { month: 'long', year: 'numeric' }); }
+function monthKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
+function deadlineDate() {
+  var parts = forecastPrefs.deadline.split('-').map(Number);
+  return new Date(parts[0], parts[1] - 1, 1);
+}
+// Брой месечни вноски от следващия месец до срока включително
+function monthsUntilDeadline(now) {
+  var d = deadlineDate();
+  now = now || new Date();
+  return (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth());
+}
+function monthlyRate(annualPct) {
+  var a = Math.min(Math.max(Number(annualPct) || 0, -50), 50);
+  return Math.pow(1 + a / 100, 1 / 12) - 1;
+}
+function futureValue(v, pmt, n, i) {
+  if (n <= 0) return v;
+  if (Math.abs(i) < 1e-12) return v + pmt * n;
+  var g = Math.pow(1 + i, n);
+  return v * g + pmt * (g - 1) / i;
+}
+function requiredMonthly(v, goal, n, i) {
+  if (n <= 0) return null;
+  if (Math.abs(i) < 1e-12) return Math.max(0, (goal - v) / n);
+  var g = Math.pow(1 + i, n);
+  return Math.max(0, (goal - v * g) * i / (g - 1));
+}
+function monthsToGoal(v, goal, pmt, i) {
+  if (v >= goal) return 0;
+  var val = v;
+  for (var k = 1; k <= 1200; k++) {
+    val = val * (1 + i) + pmt;
+    if (val >= goal) return k;
+  }
+  return null;
+}
+// Средно инвестирано на месец (без кеша) за последните `months` месеца
+function recentInvestPace(months) {
+  var now = new Date();
+  var from = new Date(now.getFullYear(), now.getMonth() - months, now.getDate()).getTime();
+  var sum = 0, lastBuy = null, lastTs = 0;
+  txns.forEach(function(t) {
+    if (assetMeta[t.ticker] && assetMeta[t.ticker].type === 'Cash') return;
+    var ts = dateSortValue(t.date);
+    if (!ts) return;
+    if (isPositiveAction(t.action) && ts > lastTs) { lastTs = ts; lastBuy = t.date; }
+    if (ts < from || ts > now.getTime()) return;
+    var amount = Number(t.qty) * Number(t.price);
+    sum += isPositiveAction(t.action) ? amount + Number(t.fee || 0) : -amount;
+  });
+  return { perMonth: sum / months, lastBuy: lastBuy };
+}
+
+function buildForecast(p) {
+  var n = monthsUntilDeadline();
+  var i = monthlyRate(forecastPrefs.returnPct);
+  var v = p.totalValue;
+  var pmt = Math.max(0, forecastPrefs.monthly || 0);
+  return {
+    n: n, i: i, v: v, pmt: pmt, goal: TOTAL_GOAL,
+    required: requiredMonthly(v, TOTAL_GOAL, n, i),
+    projected: futureValue(v, pmt, Math.max(n, 0), i),
+    reachIn: monthsToGoal(v, TOTAL_GOAL, pmt, i),
+    pace: recentInvestPace(6)
+  };
+}
+
+function statTile(label, value, sub, color) {
+  return '<div class="stat-tile"><div class="stat-label">' + escapeHtml(label) + '</div>'
+    + '<div class="stat-value"' + (color ? ' style="color:' + color + '"' : '') + '>' + escapeHtml(value) + '</div>'
+    + (sub ? '<div class="stat-sub">' + escapeHtml(sub) + '</div>' : '') + '</div>';
+}
+
+function renderForecast(p) {
+  var box = el('forecast-result');
+  if (!box) return;
+  p = p || calcPortfolio();
+  var f = buildForecast(p);
+  var now = new Date();
+  var deadlineText = monthLabel(deadlineDate());
+  var tone, headline;
+  if (f.v >= f.goal) {
+    tone = 'ok';
+    headline = 'Целта от ' + fmtEUR(f.goal) + ' вече е достигната.';
+  } else if (f.n <= 0) {
+    tone = 'bad';
+    headline = 'До срока (' + deadlineText + ') не остават месечни вноски. Избери по-късен краен срок.';
+  } else if (f.reachIn != null && f.reachIn <= f.n) {
+    tone = 'ok';
+    var early = f.n - f.reachIn;
+    headline = 'В график: при ' + fmtEUR(f.pmt) + '/мес целта се достига през ' + monthLabel(addMonths(now, f.reachIn))
+      + (early > 0 ? ', ' + early + ' мес. преди срока.' : ', точно в срок.');
+  } else {
+    tone = 'bad';
+    headline = 'Изоставане: при ' + fmtEUR(f.pmt) + '/мес към ' + deadlineText + ' ще имаш около ' + fmtEUR(f.projected)
+      + ', с ' + fmtEUR(f.goal - f.projected) + ' под целта.'
+      + (f.reachIn != null ? ' С този темп целта се достига през ' + monthLabel(addMonths(now, f.reachIn)) : '');
+  }
+
+  var diff = f.projected - f.goal;
+  var paceOk = f.required == null || f.pace.perMonth >= f.required - 0.5;
+  var tiles = [
+    statTile('Остават', f.n > 0 ? f.n + ' мес.' : '—', f.n > 0 ? 'вноски до ' + deadlineText : 'няма оставащи вноски'),
+    statTile('Нужна вноска', f.required != null ? fmtEUR(f.required) + '/мес' : '—',
+      forecastPrefs.returnPct ? 'при ' + forecastPrefs.returnPct + '% годишна доходност' : 'без доходност, само вноски'),
+    statTile('Прогноза към срока', fmtEUR(f.projected),
+      (diff >= 0 ? '+' + fmtEUR(diff) + ' над целта' : fmtEUR(-diff) + ' под целта'), diff >= 0 ? 'var(--green)' : 'var(--yellow)'),
+    statTile('Инвестирано, посл. 6 мес.', fmtEUR(f.pace.perMonth) + '/мес',
+      'без кеша' + (f.pace.lastBuy ? ' • последна покупка ' + formatDateDisplay(f.pace.lastBuy) : ''), paceOk ? 'var(--green)' : 'var(--yellow)')
+  ];
+
+  var notes = [];
+  if (!paceOk && f.v < f.goal && f.n > 0) {
+    notes.push('Реалният темп за последните 6 месеца (' + fmtEUR(f.pace.perMonth) + '/мес) е под нужните ' + fmtEUR(f.required)
+      + '/мес. Ако има покупки, които не са записани, добави ги в журнала.');
+  }
+  notes.push('Сметката: днешна стойност ' + fmtEUR(f.v) + ' + вноска в края на всеки месец'
+    + (forecastPrefs.returnPct ? ' + ' + forecastPrefs.returnPct + '% годишна доходност' : '') + '. Това е ориентир, не гаранция.');
+
+  box.innerHTML = '<div class="fc-headline ' + tone + '">' + escapeHtml(headline) + '</div>'
+    + '<div class="stat-grid">' + tiles.join('') + '</div>'
+    + '<div class="mini-note" style="margin-top:10px">' + notes.map(escapeHtml).join('<br>') + '</div>';
+}
+
+function initForecast() {
+  el('fc-monthly').value = forecastPrefs.monthly > 0 ? forecastPrefs.monthly : '';
+  el('fc-return').value = forecastPrefs.returnPct ? forecastPrefs.returnPct : '';
+  el('fc-deadline').value = forecastPrefs.deadline;
+  el('fc-deadline').min = monthKey(new Date());
+  el('fc-monthly').addEventListener('input', function() {
+    forecastPrefs.monthly = parseNumber(this.value, 0);
+    saveForecastPrefs();
+    renderForecast();
+  });
+  el('fc-return').addEventListener('input', function() {
+    forecastPrefs.returnPct = Math.min(Math.max(parseNumber(this.value, 0), -50), 50);
+    saveForecastPrefs();
+    renderForecast();
+  });
+  el('fc-deadline').addEventListener('change', function() {
+    if (!/^\d{4}-\d{2}$/.test(this.value)) { this.value = forecastPrefs.deadline; return; }
+    forecastPrefs.deadline = this.value;
+    saveForecastPrefs();
+    renderForecast();
+  });
+}
+
+// ── CONTRIBUTION CALCULATOR ─────────────────────────────────────────────────
+// Разпределя вноска без продажби. Всеки актив има „ниво“ = стойност / целеви дял
+// (същото като % в „Напредък по актив“). Парите вдигат първо най-ниското ниво,
+// после двете най-ниски заедно и т.н. Така се стига възможно най-близо до целите.
+var calcPrefs = loadCalcPrefs();
+
+function loadCalcPrefs() {
+  var saved = lsGet(LS_KEYS.calc, null);
+  if (!saved || typeof saved !== 'object') saved = {};
+  return {
+    amount: saved.amount != null ? parseNumber(saved.amount, 0) : MONTHLY_TARGET,
+    minOrder: parseNumber(saved.minOrder, 0),
+    source: saved.source === 'cash' ? 'cash' : 'new',
+    exclude: Array.isArray(saved.exclude) ? saved.exclude : null // null = по подразбиране: без кеша
+  };
+}
+function saveCalcPrefs() { lsSet(LS_KEYS.calc, calcPrefs); }
+
+function isCalcExcluded(t) {
+  if (calcPrefs.exclude) return calcPrefs.exclude.indexOf(t) >= 0;
+  return !!assetMeta[t] && assetMeta[t].type === 'Cash';
+}
+function toggleCalcAsset(t) {
+  if (!calcPrefs.exclude) {
+    calcPrefs.exclude = Object.keys(assetMeta).filter(function(x){ return assetMeta[x].type === 'Cash'; });
+  }
+  var i = calcPrefs.exclude.indexOf(t);
+  if (i >= 0) calcPrefs.exclude.splice(i, 1); else calcPrefs.exclude.push(t);
+  saveCalcPrefs();
+  renderCalculator();
+}
+
+// Актив t получава max(0, дял_t × X − стойност_t); търсим X, при което сборът е точно `amount`.
+function waterFill(tickers, values, amount) {
+  var alloc = {};
+  tickers.forEach(function(t){ alloc[t] = 0; });
+  if (!(amount > 0) || !tickers.length) return alloc;
+  var items = tickers.map(function(t) {
+    var w = assetMeta[t].targetPct, v = Math.max(0, values[t] || 0);
+    return { t: t, w: w, v: v, level: v / w };
+  }).sort(function(a, b){ return a.level - b.level; });
+  var wSum = 0, vSum = 0, X = items[0].level;
+  for (var i = 0; i < items.length; i++) {
+    wSum += items[i].w;
+    vSum += items[i].v;
+    var nextLevel = i + 1 < items.length ? items[i + 1].level : Infinity;
+    if (wSum * nextLevel - vSum >= amount) { X = (amount + vSum) / wSum; break; }
+  }
+  items.forEach(function(o){ alloc[o.t] = Math.max(0, o.w * X - o.v); });
+  return alloc;
+}
+
+function planContribution(p, amount, minOrder, fromCash) {
+  var tickers = Object.keys(assetMeta);
+  var values = {};
+  tickers.forEach(function(t){ values[t] = p.values[t] || 0; });
+  var cashTicker = tickers.filter(function(t){ return assetMeta[t].type === 'Cash'; })[0] || null;
+  var note = '';
+  if (fromCash) {
+    var available = cashTicker ? values[cashTicker] : 0;
+    if (amount > available) {
+      amount = available;
+      note = 'В кеш резерва има само ' + fmtEUR(available) + ', затова сумата е намалена.';
+    }
+    if (cashTicker) values[cashTicker] -= amount;
+  }
+  var newTotal = p.totalValue + (fromCash ? 0 : amount);
+  var initial = tickers.filter(function(t) {
+    return !isCalcExcluded(t) && (assetMeta[t].targetPct || 0) > 0 && !(fromCash && t === cashTicker);
+  });
+  var eligible = initial.slice();
+  var dropped = [];
+  var alloc = waterFill(eligible, values, amount);
+  // Суми под минималната поръчка: махаме най-малката и преразпределяме
+  while (minOrder > 0 && eligible.length > 1) {
+    var small = eligible.filter(function(t){ return alloc[t] > 0.005 && alloc[t] < minOrder; })
+      .sort(function(a, b){ return alloc[a] - alloc[b]; });
+    if (!small.length) break;
+    dropped.push(small[0]);
+    eligible = eligible.filter(function(t){ return t !== small[0]; });
+    alloc = waterFill(eligible, values, amount);
+  }
+  var after = {};
+  tickers.forEach(function(t){ after[t] = values[t] + (alloc[t] || 0); });
+  return { amount: amount, alloc: alloc, initial: initial, eligible: eligible, dropped: dropped, after: after, newTotal: newTotal, cashTicker: cashTicker, note: note };
+}
+
+// Каква част от портфолиото е извън целевото разпределение (Σ|дял − цел| / 2)
+function misallocation(values, total) {
+  if (!(total > 0)) return 0;
+  return Object.keys(assetMeta).reduce(function(s, t) {
+    return s + Math.abs((values[t] || 0) / total - (assetMeta[t].targetPct || 0));
+  }, 0) / 2;
+}
+
+// Закръгля до цели евро, като сборът остава равен на закръглената обща сума
+function roundToWhole(alloc, keys) {
+  var target = Math.round(keys.reduce(function(s, k){ return s + alloc[k]; }, 0));
+  var out = {}, sum = 0;
+  keys.forEach(function(k){ out[k] = Math.floor(alloc[k]); sum += out[k]; });
+  keys.slice().sort(function(a, b){ return (alloc[b] - Math.floor(alloc[b])) - (alloc[a] - Math.floor(alloc[a])); })
+    .slice(0, Math.max(0, target - sum))
+    .forEach(function(k){ out[k] += 1; });
+  return out;
+}
+
+function renderCalculator(p) {
+  var box = el('calc-result');
+  if (!box) return;
+  p = p || calcPortfolio();
+  var fromCash = calcPrefs.source === 'cash';
+
+  el('calc-assets').innerHTML = '<span class="calc-assets-label">Включени активи:</span>'
+    + Object.keys(assetMeta).sort(function(a, b){ return (assetMeta[b].targetPct || 0) - (assetMeta[a].targetPct || 0); })
+      .map(function(t) {
+        var meta = assetMeta[t];
+        var disabled = (fromCash && meta.type === 'Cash') || !(meta.targetPct > 0);
+        var on = !disabled && !isCalcExcluded(t);
+        var title = disabled ? (meta.targetPct > 0 ? 'Парите идват от кеша' : 'Няма целеви дял') : (on ? 'Включен — натисни, за да го изключиш' : 'Изключен — натисни, за да го включиш');
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-ticker="' + escapeHtml(t) + '" aria-pressed="' + on + '" title="' + title + '"'
+          + (disabled ? ' disabled' : '') + (on ? ' style="background:' + meta.color + ';border-color:' + meta.color + '"' : '') + '>' + escapeHtml(t) + '</button>';
+      }).join('');
+
+  var amount = parseNumber(calcPrefs.amount, 0);
+  var minOrder = Math.max(0, parseNumber(calcPrefs.minOrder, 0));
+  if (!(amount > 0)) { box.innerHTML = '<div class="mini-note">Въведи сума, за да видиш разпределението.</div>'; return; }
+  var plan = planContribution(p, amount, minOrder, fromCash);
+  if (!plan.initial.length) { box.innerHTML = '<div class="mini-note">Включи поне един актив.</div>'; return; }
+  if (!(plan.amount > 0)) { box.innerHTML = '<div class="mini-note">' + escapeHtml(plan.note || 'Няма пари за разпределяне.') + '</div>'; return; }
+
+  var funded = plan.eligible.filter(function(t){ return plan.alloc[t] > 0.005; })
+    .sort(function(a, b){ return plan.alloc[b] - plan.alloc[a]; });
+  var rounded = roundToWhole(plan.alloc, funded);
+  var rows = funded.map(function(t) {
+    var meta = assetMeta[t];
+    var price = getPrice(t);
+    var qty = plan.alloc[t] / price;
+    var qtyText = meta.type === 'Gold' ? '≈ ' + fmtNumber(qty, 1) + ' g'
+      : price === 1 ? '—'
+      : '≈ ' + fmtNumber(qty, 4) + ' бр. × ' + fmtNumber(price, 2);
+    var before = p.totalValue > 0 ? (p.values[t] || 0) / p.totalValue : 0;
+    var afterShare = plan.newTotal > 0 ? plan.after[t] / plan.newTotal : 0;
+    return '<div class="calc-grid calc-row" style="border-left-color:' + meta.color + '">'
+      + '<div><div style="font-weight:600">' + escapeHtml(meta.label) + '</div><div style="font-size:11px;color:var(--muted)">' + escapeHtml(t) + '</div></div>'
+      + '<div class="calc-amount" style="color:#f1f5f9">' + escapeHtml(fmtEUR(rounded[t])) + '</div>'
+      + '<div>' + escapeHtml(qtyText) + '</div>'
+      + '<div>' + fmtPct(before) + ' → <b>' + fmtPct(afterShare) + '</b> <span style="color:var(--muted)">(цел ' + fmtPct(meta.targetPct, 0) + ')</span></div>'
+      + '</div>';
+  }).join('');
+
+  var skipped = plan.initial.filter(function(t){ return funded.indexOf(t) < 0 && plan.dropped.indexOf(t) < 0; });
+  var notes = [];
+  if (plan.note) notes.push(escapeHtml(plan.note));
+  if (skipped.length) notes.push('Без вноска този път (по-близо до целта): ' + escapeHtml(skipped.join(', ')) + '.');
+  if (plan.dropped.length) notes.push('Под минималната поръчка, сумата им е преразпределена: ' + escapeHtml(plan.dropped.join(', ')) + '.');
+  if (fromCash && plan.cashTicker) {
+    notes.push('Кеш резерв: ' + fmtEUR(p.values[plan.cashTicker] || 0) + ' → ' + fmtEUR(plan.after[plan.cashTicker]) + '.');
+  }
+  notes.push('Количествата са приблизителни: по текущите цени, без такси.');
+
+  var beforeMis = misallocation(p.values, p.totalValue);
+  var afterMis = misallocation(plan.after, plan.newTotal);
+  box.innerHTML = '<div class="calc-grid calc-header"><div>Актив</div><div>Сума</div><div>Количество</div><div>Дял сега → след</div></div>'
+    + rows
+    + '<div class="calc-summary"><span>Общо: <b style="color:#f1f5f9">' + escapeHtml(fmtEUR(plan.amount)) + '</b></span>'
+    + '<span>Извън целевото разпределение: ' + fmtPct(beforeMis) + ' → <b style="color:var(--green)">' + fmtPct(afterMis) + '</b> от портфолиото</span></div>'
+    + '<div class="mini-note" style="margin-top:8px">' + notes.join('<br>') + '</div>';
+}
+
+function initCalculator() {
+  el('calc-amount').value = calcPrefs.amount > 0 ? calcPrefs.amount : '';
+  el('calc-min').value = calcPrefs.minOrder > 0 ? calcPrefs.minOrder : '';
+  el('calc-source').value = calcPrefs.source;
+  el('calc-amount').addEventListener('input', function() {
+    calcPrefs.amount = parseNumber(this.value, 0);
+    saveCalcPrefs();
+    renderCalculator();
+  });
+  el('calc-min').addEventListener('input', function() {
+    calcPrefs.minOrder = parseNumber(this.value, 0);
+    saveCalcPrefs();
+    renderCalculator();
+  });
+  el('calc-source').addEventListener('change', function() {
+    calcPrefs.source = this.value === 'cash' ? 'cash' : 'new';
+    saveCalcPrefs();
+    renderCalculator();
+  });
+  el('calc-assets').addEventListener('click', function(e) {
+    var chip = e.target.closest('.chip');
+    if (chip && !chip.disabled) toggleCalcAsset(chip.dataset.ticker);
+  });
+}
+
+// ── CHECKLIST ───────────────────────────────────────────────────────────────
+// Отметките важат за текущия период (месец / тримесечие / полугодие / година)
+// и се нулират автоматично, когато периодът изтече.
+function periodInfo(period, d) {
+  d = d || new Date();
+  var y = d.getFullYear(), m = d.getMonth();
+  if (period === 'quarter') {
+    var q = Math.floor(m / 3) + 1;
+    return { key: y + '-Q' + q, label: ['1-во', '2-ро', '3-то', '4-то'][q - 1] + ' тримесечие ' + y };
+  }
+  if (period === 'half') {
+    var h = m < 6 ? 1 : 2;
+    return { key: y + '-H' + h, label: (h === 1 ? '1-во' : '2-ро') + ' полугодие ' + y };
+  }
+  if (period === 'year') return { key: String(y), label: y + ' г.' };
+  return { key: y + '-' + pad2(m + 1), label: d.toLocaleDateString('bg-BG', { month: 'long', year: 'numeric' }) };
+}
+
+function renderChecklist() {
+  var validKeys = {};
+  el('checklist-grid').innerHTML = CHECKLIST_DATA.map(function(section) {
+    var period = section.period || 'month';
+    var per = periodInfo(period);
+    var done = 0;
+    var itemsHtml = section.items.map(function(item) {
+      var key = period + '|' + per.key + '|' + section.title + '|' + item;
+      validKeys[key] = true;
+      var isDone = !!checks[key];
+      if (isDone) done += 1;
+      return '<div class="check-item" role="checkbox" tabindex="0" aria-checked="' + isDone + '" data-key="' + escapeHtml(key) + '">'
+        + '<div class="check-box' + (isDone ? ' checked' : '') + '"><span style="color:#0a0f1e;font-size:10px;font-weight:900">' + (isDone ? 'OK' : '') + '</span></div>'
+        + '<span class="check-text' + (isDone ? ' done' : '') + '">' + escapeHtml(item) + '</span>'
+        + '</div>';
+    }).join('');
+    return '<div class="card" style="border:1px solid ' + section.color + '44">'
+      + '<div class="card-top" style="background:' + section.color + '"></div>'
+      + '<div style="margin-bottom:14px"><div style="font-size:14px;font-weight:700;color:' + section.color + '">' + escapeHtml(section.title) + '</div>'
+      + '<div class="mini-note">' + escapeHtml(per.label) + ' • ' + done + '/' + section.items.length + ' изпълнени</div></div>'
+      + itemsHtml
+      + '</div>';
+  }).join('');
+  var changed = false;
+  Object.keys(checks).forEach(function(k) { if (!validKeys[k]) { delete checks[k]; changed = true; } });
+  if (changed) lsSet(LS_KEYS.checks, checks);
+}
+
+function toggleCheck(key) {
+  if (checks[key]) delete checks[key]; else checks[key] = true;
+  lsSet(LS_KEYS.checks, checks);
+  renderChecklist();
+  var items = el('checklist-grid').querySelectorAll('.check-item');
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].dataset.key === key) { items[i].focus(); break; }
+  }
+}
+
+// ── TRANSACTION ACTIONS ─────────────────────────────────────────────────────
+function resetTxnForm() {
+  el('f-date').value = todayISO();
+  el('f-qty').value = '';
+  el('f-fee').value = '';
+  el('f-note').value = '';
 }
 
 async function saveTxn() {
@@ -1197,111 +1998,497 @@ async function saveTxn() {
   var ticker = el('f-ticker').value;
   var qty = parseFloat(el('f-qty').value);
   var price = parseFloat(el('f-price').value);
-  var note = el('f-note').value;
+  var feeRaw = el('f-fee').value;
+  var fee = feeRaw === '' ? 0 : parseFloat(feeRaw);
+  var note = el('f-note').value.trim();
 
-  if (!qty || !price) { alert('Моля въведи количество и цена'); return; }
-  var payloadHash = [date, action, ticker, qty, price, note].join('|');
+  if (!date || !parseDateValue(date)) { alert('Моля въведи дата.'); return; }
+  if (!ticker) { alert('Моля избери актив.'); return; }
+  if (!(qty > 0)) { alert('Количеството трябва да е положително число.'); return; }
+  if (!(price > 0)) { alert('Цената трябва да е положително число.'); return; }
+  if (!(fee >= 0)) { alert('Таксата не може да е отрицателна.'); return; }
+  if (!isPositiveAction(action)) {
+    var held = calcPortfolio().holdings[ticker] || 0;
+    if (qty > held + 1e-9 && !confirm('В портфолиото има ' + fmtNumber(held, 4) + ' ' + ticker + ', а въвеждаш ' + fmtNumber(qty, 4) + '. Да продължа ли?')) return;
+  }
+
+  var newTxn = { date: date, action: action, ticker: ticker, qty: qty, price: price, fee: fee, note: note };
+  var payloadHash = txnSignature(newTxn);
   if (recentSubmissionHash === payloadHash) {
-    alert('Изглежда същата транзакция вече беше подадена. Провери дали не е дубликат.');
+    alert('Същата транзакция току-що беше подадена. Провери дали не е дубликат.');
     return;
   }
   recentSubmissionHash = payloadHash;
+  setTimeout(function(){ recentSubmissionHash = null; }, 3000);
 
   var saveBtn = el('save-btn');
   saveBtn.disabled = true;
   saveBtn.textContent = 'Записване...';
-
-  var category = assetMeta[ticker] && assetMeta[ticker].type === 'Cash' ? 'Personal'
-    : assetMeta[ticker] && assetMeta[ticker].type === 'Gold' ? 'Other'
-    : assetMeta[ticker] && assetMeta[ticker].type === 'Stocks' ? 'Invested'
-    : 'Invested';
-  var fee = 0;
-  var total = isPositiveAction(action) ? -(qty * price + fee) : (qty * price);
-  var row = [date, toSheetAction(action), category, ticker, qty, price, fee, total, note];
-
+  var saved = false;
   try {
-    var params = '?action=appendJournal&row=' + encodeURIComponent(JSON.stringify(row));
-    var res = await fetch(SCRIPT_URL + params);
-    var json = await res.json();
-    if (!json.ok) throw new Error(json.error || 'Грешка');
-    setSyncStatus('ok', 'Записано в Sheets!');
-  } catch (err) {
-    setSyncStatus('error', 'Sheets грешка — записано локално');
-  }
-
-  var newTxn = { date: date, action: action, ticker: ticker, qty: qty, price: price, fee: fee, note: note };
-  pendingTxns.push(newTxn);
-  persistPendingTxns();
-  clearOneHiddenSignature(txnSignature(newTxn));
-  rebuildTransactions();
-  closeTxnModal();
-  renderAll();
-
+    await appendRowToSheets(buildSheetRow(newTxn));
+    saved = true;
+  } catch (_) {}
   saveBtn.disabled = false;
   saveBtn.textContent = 'Запази в Sheets';
-  setTimeout(function(){ recentSubmissionHash = null; }, 3000);
+  closeTxnModal();
+  resetTxnForm();
+
+  if (saved) {
+    setSyncStatus('ok', 'Записано в Sheets');
+    await loadFromSheets(); // презарежда, за да получим реалния ред от Sheets
+  } else {
+    pendingTxns.push(newTxn);
+    persistPendingTxns();
+    rebuildTransactions();
+    renderAll();
+    setSyncStatus('error', 'Sheets не отговаря — записано само локално');
+  }
 }
 
-async function deleteTxn(idx) {
-  var target = txns[idx];
-  if (!target) return;
-  if (!confirm('Изтриване на записа: ' + target.date + ' ' + target.ticker + ' ' + target.qty + '?')) return;
-
-  // Remove from pendingTxns if it's there
-  removeOnePendingBySignature(txnSignature(target));
-
-  // Find the row in Sheets (header is row 1, data starts at row 2)
-  // We need to match by date+action+ticker+qty to find the right row
-  var sheetRowIndex = target.sheetRowIndex || null;
-  if (sheetRowIndex && sheetRowIndex >= 2) {
-    try {
-      var params = '?action=deleteJournalRow&rowIndex=' + sheetRowIndex;
-      var res = await fetch(SCRIPT_URL + params);
-      var json = await res.json();
-      if (json.ok) {
-        setSyncStatus('ok', 'Изтрито от Sheets!');
-      } else {
-        setSyncStatus('error', 'Грешка при изтриване от Sheets');
-      }
-    } catch(err) {
-      setSyncStatus('error', 'Грешка при изтриване от Sheets');
+async function syncPendingTxns() {
+  if (isSyncingPending || !pendingTxns.length) return;
+  isSyncingPending = true;
+  renderAll();
+  setSyncStatus('loading', 'Изпращане на локалните записи...');
+  try {
+    // Първо четем JOURNAL, за да не изпратим нещо, което вече е там
+    var fresh = await fetchJSON('getJournal');
+    remoteTxns = parseJournal(fresh.data || [], 'sheets');
+    reconcilePending();
+    var remaining = [];
+    for (var i = 0; i < pendingTxns.length; i++) {
+      var t = normalizeTxn(pendingTxns[i], 'pending');
+      if (!t) continue;
+      try { await appendRowToSheets(buildSheetRow(t)); }
+      catch (_) { remaining.push(pendingTxns[i]); }
     }
+    pendingTxns = remaining;
+    persistPendingTxns();
+    isSyncingPending = false;
+    await loadFromSheets();
+    if (remaining.length) setSyncStatus('error', remaining.length + ' записа не успяха да се изпратят');
+  } catch (err) {
+    isSyncingPending = false;
+    renderAll();
+    setSyncStatus('error', 'Няма връзка с Sheets — локалните записи остават');
   }
+}
 
-  // Remove locally
-  txns.splice(idx, 1);
-  localStorage.setItem('misho_txns', JSON.stringify(txns));
+function removeOnePending(target) {
+  var sig = txnSignature(target), removed = false;
+  pendingTxns = pendingTxns.filter(function(raw) {
+    if (removed) return true;
+    var t = normalizeTxn(raw, 'pending');
+    if (t && txnSignature(t) === sig) { removed = true; return false; }
+    return true;
+  });
+  persistPendingTxns();
+}
+
+async function deleteTxn(id) {
+  if (isDeleting) return;
+  var target = txns.find(function(t){ return t.id === id; });
+  if (!target) return;
+  var label = formatDateDisplay(target.date) + ' • ' + target.action + ' ' + target.ticker + ' ' + fmtNumber(target.qty, 4);
+
+  if (target.source === 'pending') {
+    if (!confirm('Изтриване на локалния запис (не е в Sheets):\n' + label + '?')) return;
+    removeOnePending(target);
+    rebuildTransactions();
+    renderAll();
+    return;
+  }
+  if (target.source !== 'sheets') {
+    alert('Няма връзка с Google Sheets, затова записът не може да бъде изтрит сега. Опитай отново, когато синхронизацията проработи.');
+    return;
+  }
+  if (!confirm('Изтриване от Google Sheets:\n' + label + '?')) return;
+
+  isDeleting = true;
+  setSyncStatus('loading', 'Изтриване...');
+  try {
+    // Редовете в Sheets се изместват след всяко изтриване, затова винаги
+    // четем JOURNAL наново и проверяваме, че на този ред е точно този запис.
+    var fresh = parseJournal((await fetchJSON('getJournal')).data || [], 'sheets');
+    var sig = txnSignature(target);
+    var matches = fresh.filter(function(t){ return txnSignature(t) === sig; });
+    if (!matches.length) throw new Error('записът вече го няма в Sheets');
+    var row = matches.find(function(t){ return t.sheetRowIndex === target.sheetRowIndex; }) || matches[0];
+    await fetchJSON('deleteJournalRow', '&rowIndex=' + row.sheetRowIndex);
+    setSyncStatus('ok', 'Изтрито от Sheets');
+  } catch (err) {
+    isDeleting = false;
+    setSyncStatus('error', 'Грешка при изтриване');
+    alert('Записът не беше изтрит: ' + err.message);
+    return;
+  }
+  isDeleting = false;
+  await loadFromSheets();
+}
+
+async function pushSnapshotTxn(i) {
+  var t = missingSnapshotTxns[i];
+  if (!t) return;
+  if (!confirm('Да добавя ли записа в Sheets?\n' + formatDateDisplay(t.date) + ' • ' + t.action + ' ' + t.ticker + ' ' + fmtNumber(t.qty, 4))) return;
+  try {
+    await appendRowToSheets(buildSheetRow(t));
+    setSyncStatus('ok', 'Добавено в Sheets');
+    await loadFromSheets();
+  } catch (err) {
+    setSyncStatus('error', 'Грешка при добавяне в Sheets');
+  }
+}
+
+function dismissSnapshotTxns(list) {
+  var dismissed = lsGet(LS_KEYS.snapshotDismissed, {}) || {};
+  list.forEach(function(t) {
+    var sig = txnSignature(t);
+    dismissed[sig] = (dismissed[sig] || 0) + 1;
+  });
+  lsSet(LS_KEYS.snapshotDismissed, dismissed);
+  computeMissingSnapshot();
   renderAll();
 }
-
-function toggleCheck(key) {
-  checks[key] = !checks[key];
-  localStorage.setItem('misho_checks', JSON.stringify(checks));
-  renderChecklist();
+function dismissSnapshotTxn(i) {
+  if (missingSnapshotTxns[i]) dismissSnapshotTxns([missingSnapshotTxns[i]]);
+}
+function dismissAllSnapshotTxns() {
+  if (!confirm('Да игнорирам ли всички ' + missingSnapshotTxns.length + ' записа? Те няма да се добавят в Sheets.')) return;
+  dismissSnapshotTxns(missingSnapshotTxns.slice());
 }
 
+// ── PRICES UI ───────────────────────────────────────────────────────────────
+function openPriceModal() {
+  var tickers = Object.keys(assetMeta).filter(function(t){ return assetMeta[t].type !== 'Cash'; });
+  el('price-fields').innerHTML = tickers.map(function(t) {
+    return '<div><label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block;font-weight:500">' + escapeHtml(assetMeta[t].label)
+      + ' — текуща: ' + escapeHtml(fmtNumber(getPrice(t), 2)) + ' EUR<br><span style="font-size:11px">' + escapeHtml(priceSourceLabel(t)) + '</span></label>'
+      + '<input type="number" step="any" min="0" placeholder="нова цена" class="price-input" data-ticker="' + escapeHtml(t) + '" '
+      + 'style="width:100%;background:#080d1a;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#f1f5f9;font-size:14px;font-family:Inter,sans-serif"></div>';
+  }).join('');
+  el('price-modal').classList.remove('hidden');
+}
+function closePriceModal() { el('price-modal').classList.add('hidden'); }
+
 function applyPrices() {
+  var updates = [], bad = [];
   document.querySelectorAll('.price-input').forEach(function(inp) {
-    if (inp.value) prices[inp.dataset.ticker] = parseFloat(inp.value);
+    if (inp.value === '') return;
+    var v = parseFloat(inp.value);
+    if (v > 0) updates.push([inp.dataset.ticker, v]); else bad.push(inp.dataset.ticker);
   });
-  localStorage.setItem('misho_prices', JSON.stringify(prices));
+  if (bad.length) { alert('Невалидна цена за: ' + bad.join(', ')); return; }
+  updates.forEach(function(u){ setPrice(u[0], u[1], 'manual'); });
+  savePriceStore();
   closePriceModal();
   renderAll();
 }
 
+// ── LIVE PRICES ─────────────────────────────────────────────────────────────
+// Live цена, която се различава над 3 пъти от текущата, се пропуска.
+// Така се хваща напр. злато в USD за тройунция вместо EUR за грам.
+var liveUnsupported = false;
+async function fetchLivePrices() {
+  var badge = el('price-sync-badge');
+  var txt = el('price-sync-text');
+  if (liveUnsupported) {
+    badge.className = 'badge warn';
+    txt.textContent = 'Apps Script няма функция за live цени — ползват се цените от SETTINGS / ръчно въведените';
+    return;
+  }
+  if (isFetchingLive) return;
+  isFetchingLive = true;
+  badge.className = 'badge loading';
+  txt.textContent = 'Зареждане на live цени...';
+  try {
+    var json = await fetchJSON('getLivePrices');
+    if (!json.prices) throw new Error('няма цени в отговора');
+    var quotedAt = Date.parse(json.at || '');
+    var accepted = 0, rejected = [];
+    Object.keys(json.prices).forEach(function(raw) {
+      var t = String(raw).toUpperCase();
+      if (!assetMeta[t]) return;
+      var v = parseNumber(json.prices[raw], 0);
+      if (!(v > 0)) return;
+      var ref = getPrice(t);
+      var ratio = ref > 0 ? v / ref : 1;
+      if (ratio > 3 || ratio < 1 / 3) { rejected.push(t + ' (' + fmtNumber(v, 2) + ')'); return; }
+      setPrice(t, v, 'live');
+      if (quotedAt > 0) priceStore[t].ts = quotedAt;
+      accepted += 1;
+    });
+    savePriceStore();
+    var time = new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
+    if (rejected.length) {
+      badge.className = 'badge warn';
+      txt.textContent = 'Live цени ' + time + ' • пропуснати (съмнителна стойност/единица): ' + rejected.join(', ');
+    } else {
+      badge.className = accepted ? 'badge ok' : 'badge warn';
+      txt.textContent = accepted ? 'Live цени • ' + time : 'Няма live цени за наличните активи';
+    }
+    renderAll();
+  } catch (err) {
+    if (/unknown action/i.test(err.message)) {
+      liveUnsupported = true;
+      isFetchingLive = false;
+      fetchLivePrices();
+      return;
+    }
+    badge.className = 'badge error';
+    txt.textContent = 'Live цените не са достъпни — ползват се последните известни';
+  } finally {
+    isFetchingLive = false;
+  }
+}
+
+function renderLivePrices() {
+  var grid = el('live-prices-grid');
+  if (!grid) return;
+  var tickers = Object.keys(assetMeta).filter(function(t){
+    var type = assetMeta[t].type;
+    return type === 'ETF' || type === 'Gold';
+  });
+  grid.innerHTML = tickers.map(function(t) {
+    var meta = assetMeta[t];
+    var color = meta.color || '#334155';
+    return '<div class="price-tile" style="border:1px solid ' + color + '33">'
+      + '<div class="price-tile-top" style="background:' + color + '"></div>'
+      + '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600">' + escapeHtml(t) + '</div>'
+      + '<div style="font-size:18px;font-weight:700;color:#f1f5f9">' + escapeHtml(fmtNumber(getPrice(t), 2)) + ' EUR</div>'
+      + '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escapeHtml(meta.label || t) + '</div>'
+      + '<div style="font-size:10px;color:#475569;margin-top:4px">' + escapeHtml(priceSourceLabel(t)) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── CONTRIBUTIONS CHART ─────────────────────────────────────────────────────
+function buildMonthlyContributions() {
+  var monthly = {};
+  txns.forEach(function(tx) {
+    var d = parseDateValue(tx.date);
+    if (!d) return;
+    var key = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+    var amount = Number(tx.qty) * Number(tx.price);
+    monthly[key] = (monthly[key] || 0) + (isPositiveAction(tx.action) ? amount + Number(tx.fee || 0) : -amount);
+  });
+  var keys = Object.keys(monthly).sort();
+  if (!keys.length) return [];
+  var first = keys[0].split('-').map(Number);
+  var lastData = keys[keys.length - 1].split('-').map(Number);
+  var now = new Date();
+  var end = [now.getFullYear(), now.getMonth() + 1];
+  if (lastData[0] > end[0] || (lastData[0] === end[0] && lastData[1] > end[1])) end = lastData;
+  var out = [], running = 0, y = first[0], m = first[1];
+  while (y < end[0] || (y === end[0] && m <= end[1])) {
+    var k = y + '-' + pad2(m);
+    running += monthly[k] || 0;
+    out.push({ label: k, value: Math.round(running) });
+    m += 1;
+    if (m > 12) { m = 1; y += 1; }
+  }
+  return out;
+}
+
+function renderGrowthChart(p) {
+  var canvas = el('growth-chart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  var data = buildMonthlyContributions();
+  if (growthChartInstance) { growthChartInstance.destroy(); growthChartInstance = null; }
+  var labels = data.map(function(d){ return d.label; });
+  var values = data.map(function(d){ return d.value; });
+  var now = new Date();
+  var curIdx = labels.indexOf(monthKey(now));
+  if (curIdx < 0) curIdx = labels.length - 1;
+  var marketPoint = values.map(function(_, i){ return i === curIdx ? Math.round(p.totalValue) : null; });
+
+  // Прогноза: от днешната пазарна стойност до срока, с вноската и доходността от картата „Прогноза“
+  var f = buildForecast(p);
+  var projection = values.map(function(){ return null; });
+  if (f.n > 0 && labels.length) {
+    projection[curIdx] = Math.round(p.totalValue);
+    var running = p.totalValue;
+    for (var k = 1; k <= f.n; k++) {
+      running = running * (1 + f.i) + f.pmt;
+      var key = monthKey(addMonths(now, k));
+      var idx = labels.indexOf(key);
+      if (idx < 0) { labels.push(key); values.push(null); marketPoint.push(null); projection.push(null); idx = labels.length - 1; }
+      projection[idx] = Math.round(running);
+    }
+  }
+  var goalLine = labels.map(function(){ return TOTAL_GOAL; });
+  growthChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Вложени средства (EUR)', data: values, borderColor: '#6EE7B7', backgroundColor: 'rgba(110,231,183,0.08)', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#6EE7B7', fill: true, tension: 0.3 },
+        { label: 'Пазарна стойност днес', data: marketPoint, borderColor: '#FCD34D', backgroundColor: '#FCD34D', pointRadius: 6, pointHoverRadius: 8, showLine: false },
+        { label: 'Прогноза (' + fmtEUR(f.pmt) + '/мес' + (forecastPrefs.returnPct ? ', ' + forecastPrefs.returnPct + '%' : '') + ')', data: projection, borderColor: '#A78BFA', backgroundColor: '#A78BFA', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, fill: false, tension: 0 },
+        { label: 'Цел ' + fmtEUR(TOTAL_GOAL), data: goalLine, borderColor: '#60A5FA', borderWidth: 1.5, borderDash: [6,4], pointRadius: 0, fill: false, tension: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } },
+        tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('bg-BG') + ' EUR'; } } }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } }, grid: { color: '#1e293b' } },
+        y: { beginAtZero: true, ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, callback: function(v){ return v.toLocaleString('bg-BG') + ' EUR'; } }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+
+// ── NAP EXPORT ──────────────────────────────────────────────────────────────
+function selectedNAPYear() {
+  var sel = el('nap-year');
+  var y = sel && sel.value ? Number(sel.value) : NaN;
+  if (!isNaN(y)) return y;
+  var now = new Date();
+  return now.getMonth() <= 3 ? now.getFullYear() - 1 : now.getFullYear(); // до април — предходната година
+}
+
+function renderNAPYearOptions() {
+  var sel = el('nap-year');
+  if (!sel) return;
+  var current = selectedNAPYear();
+  var years = {};
+  txns.forEach(function(t){ var d = parseDateValue(t.date); if (d) years[d.getFullYear()] = true; });
+  years[new Date().getFullYear()] = true;
+  years[current] = true;
+  sel.innerHTML = Object.keys(years).map(Number).sort(function(a, b){ return b - a; })
+    .map(function(y){ return '<option value="' + y + '">' + y + '</option>'; }).join('');
+  sel.value = String(current);
+}
+
+// Позиции към 31.12 на годината: средно претеглена цена, таксите влизат в цената на придобиване.
+function buildNAPData(year) {
+  var cutoff = new Date(year, 11, 31, 23, 59, 59).getTime();
+  var etfTickers = Object.keys(assetMeta).filter(function(t){ return assetMeta[t].type === 'ETF'; });
+  var state = {};
+  txns.slice().sort(function(a, b) {
+    return dateSortValue(a.date) - dateSortValue(b.date)
+      || (isPositiveAction(a.action) ? 0 : 1) - (isPositiveAction(b.action) ? 0 : 1);
+  }).forEach(function(tx) {
+    if (etfTickers.indexOf(tx.ticker) < 0) return;
+    var ts = dateSortValue(tx.date);
+    if (!ts || ts > cutoff) return;
+    var s = state[tx.ticker] || (state[tx.ticker] = { qty: 0, cost: 0, firstDate: null, lastDate: null, buys: 0 });
+    if (isPositiveAction(tx.action)) {
+      if (s.qty <= 1e-9) { s.firstDate = tx.date; s.buys = 0; }
+      s.qty += Number(tx.qty);
+      s.cost += Number(tx.qty) * Number(tx.price) + Number(tx.fee || 0);
+      s.lastDate = tx.date;
+      s.buys += 1;
+    } else {
+      var avg = s.qty > 0 ? s.cost / s.qty : 0;
+      var q = Math.min(Number(tx.qty), s.qty);
+      s.qty -= q;
+      s.cost -= avg * q;
+      if (s.qty <= 1e-9) { s.qty = 0; s.cost = 0; s.firstDate = null; s.lastDate = null; s.buys = 0; }
+    }
+  });
+  return etfTickers.filter(function(t){ return state[t] && state[t].qty > 1e-9; }).map(function(t) {
+    var s = state[t];
+    return {
+      ticker: t,
+      name: assetMeta[t].rawLabel || assetMeta[t].label,
+      qty: s.qty,
+      avgPrice: s.cost / s.qty,
+      totalCost: s.cost,
+      firstDate: formatDateDisplay(s.firstDate),
+      lastDate: formatDateDisplay(s.lastDate),
+      buys: s.buys,
+      currentValue: s.qty * getPrice(t)
+    };
+  });
+}
+
+function renderNAPTable() {
+  var tbl = el('nap-table');
+  if (!tbl) return;
+  var year = selectedNAPYear();
+  var data = buildNAPData(year);
+  var header = '<div class="nap-grid nap-header">'
+    + '<div>Тикер</div><div>Наименование</div><div>Брой дялове</div>'
+    + '<div>Ср. цена (EUR)</div><div>Цена на придобиване (EUR)</div><div>Покупки</div><div>Стойност днес (EUR)</div>'
+    + '</div>';
+  if (!data.length) {
+    tbl.innerHTML = header + '<div class="nap-row" style="color:var(--muted)">Няма ETF позиции към 31.12.' + year + '</div>';
+    return;
+  }
+  var rows = data.map(function(d) {
+    return '<div class="nap-grid nap-row">'
+      + '<div style="font-weight:700;color:var(--green)">' + escapeHtml(d.ticker) + '</div>'
+      + '<div style="font-size:12px;color:var(--sub)">' + escapeHtml(d.name) + '</div>'
+      + '<div>' + fmtNumber(d.qty, 4) + '</div>'
+      + '<div>' + fmtNumber(d.avgPrice, 2) + '</div>'
+      + '<div style="font-weight:600">' + fmtNumber(d.totalCost, 2) + '</div>'
+      + '<div style="font-size:12px;color:var(--sub)">' + d.buys + ' бр. • ' + escapeHtml(d.firstDate) + (d.buys > 1 ? ' – ' + escapeHtml(d.lastDate) : '') + '</div>'
+      + '<div style="font-weight:600;color:var(--green)">' + fmtNumber(d.currentValue, 2) + '</div>'
+      + '</div>';
+  }).join('');
+  tbl.innerHTML = header + rows;
+}
+
+function exportNAP(mode) {
+  var year = selectedNAPYear();
+  var data = buildNAPData(year);
+  if (mode === 'csv') {
+    var rows = [[
+      'Тикер', 'Наименование', 'Брой дялове към 31.12.' + year, 'Средна цена на придобиване с такси (EUR)',
+      'Обща цена на придобиване с такси (EUR)', 'Първа покупка', 'Последна покупка', 'Брой покупки', 'Стойност по текущи цени (EUR)'
+    ]];
+    data.forEach(function(d) {
+      rows.push([d.ticker, d.name, d.qty.toFixed(4), d.avgPrice.toFixed(2), d.totalCost.toFixed(2), d.firstDate, d.lastDate, d.buys, d.currentValue.toFixed(2)]);
+    });
+    var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    downloadFile('NAP-ETF-' + year + '.csv', '﻿' + csv, 'text/csv;charset=utf-8');
+    return;
+  }
+  var win = window.open('', '_blank');
+  if (!win) { alert('Браузърът блокира новия прозорец. Разреши pop-up прозорците за тази страница.'); return; }
+  var html = '<html><head><meta charset="UTF-8"><title>НАП ETF справка ' + year + '</title>'
+    + '<style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px}table{border-collapse:collapse;width:100%}th{background:#f0f4f8;padding:8px;text-align:left;border:1px solid #ddd}td{padding:8px;border:1px solid #ddd}</style></head><body>'
+    + '<h2>Справка за НАП — ETF позиции към 31.12.' + year + '</h2>'
+    + '<p style="color:#666">Генерирано на: ' + new Date().toLocaleDateString('bg-BG') + ' • средно претеглена цена, таксите са включени в цената на придобиване</p>'
+    + '<table><tr><th>Тикер</th><th>Наименование</th><th>Брой дялове</th><th>Ср. цена (EUR)</th><th>Цена на придобиване (EUR)</th><th>Първа покупка</th><th>Последна покупка</th><th>Брой покупки</th></tr>';
+  data.forEach(function(d) {
+    html += '<tr><td><b>' + escapeHtml(d.ticker) + '</b></td><td>' + escapeHtml(d.name) + '</td><td>' + d.qty.toFixed(4) + '</td><td>' + d.avgPrice.toFixed(2)
+      + '</td><td>' + d.totalCost.toFixed(2) + '</td><td>' + escapeHtml(d.firstDate) + '</td><td>' + escapeHtml(d.lastDate) + '</td><td>' + d.buys + '</td></tr>';
+  });
+  if (!data.length) html += '<tr><td colspan="8">Няма ETF позиции към 31.12.' + year + '</td></tr>';
+  html += '</table></body></html>';
+  win.document.write(html);
+  win.document.close();
+  win.print();
+}
+
+function renderAnalysis(p) {
+  p = p || calcPortfolio();
+  renderLivePrices();
+  renderGrowthChart(p);
+  renderNAPYearOptions();
+  renderNAPTable();
+}
+
+// ── MISC UI ─────────────────────────────────────────────────────────────────
 function downloadBackup() {
   var data = {
     exportedOn: new Date().toISOString(),
     totalGoal: TOTAL_GOAL,
+    monthlyTarget: MONTHLY_TARGET,
+    dataSource: journalSource,
     assetMeta: assetMeta,
-    transactions: txns,
-    prices: prices,
+    transactions: txns.map(stripTxn),
+    pendingTransactions: pendingTxns,
+    prices: priceStore,
     checks: checks
   };
-  var a = document.createElement('a');
-  a.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(data, null, 2));
-  a.download = 'backup-' + todayISO() + '.json';
-  a.click();
+  downloadFile('backup-' + todayISO() + '.json', JSON.stringify(data, null, 2), 'application/json');
 }
 
 function switchTab(name, btn) {
@@ -1316,261 +2503,48 @@ function switchTab(name, btn) {
 }
 
 function openTxnModal() {
-  el('f-date').value = todayISO();
   var currentTicker = el('f-ticker').value;
   populateTickerSelects();
-  if (currentTicker) el('f-ticker').value = currentTicker;
-  if (!el('f-price').value && el('f-ticker').value) {
-    el('f-price').value = prices[el('f-ticker').value] || 1;
-  }
+  if (currentTicker && assetMeta[currentTicker]) el('f-ticker').value = currentTicker;
+  if (!el('f-date').value) el('f-date').value = todayISO();
+  if (!el('f-price').value && el('f-ticker').value) el('f-price').value = getPrice(el('f-ticker').value);
   el('txn-modal').classList.remove('hidden');
+  el('f-qty').focus();
 }
 function closeTxnModal() { el('txn-modal').classList.add('hidden'); }
 
-function openPriceModal() {
-  var tickers = Object.keys(assetMeta).filter(function(t){ return t !== 'CASH'; });
-  el('price-fields').innerHTML = tickers.map(function(t) {
-    return '<div><label style="font-size:12px;color:var(--muted);margin-bottom:6px;display:block;font-weight:500">' + escapeHtml(assetMeta[t].label) + ' — текуща: ' + escapeHtml(fmtNumber(prices[t] || assetMeta[t].price || 1, 2)) + ' EUR</label>'
-      + '<input type="number" step="any" placeholder="нова цена" class="price-input" data-ticker="' + t + '" '
-      + 'style="width:100%;background:#080d1a;border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:#f1f5f9;font-size:14px;font-family:Inter,sans-serif"></div>';
-  }).join('');
-  el('price-modal').classList.remove('hidden');
-}
-function closePriceModal() { el('price-modal').classList.add('hidden'); }
-
 function setSyncStatus(status, msg) {
-  var badge = el('sync-badge');
-  badge.className = 'badge ' + status;
+  el('sync-badge').className = 'badge ' + status;
   el('sync-text').textContent = msg;
-}
-
-// ── LIVE PRICES ─────────────────────────────────────────────────────────────
-var livePriceCache = {};
-var YAHOO_TICKERS = {
-  EUNL: 'EUNL.AS',
-  ZPRL: 'ZPRL.MI',
-  MIVA: 'MIVA.MI',
-  XEON: 'XEON.DE',
-  GOLD: 'GC=F'
-};
-
-async function fetchLivePrices() {
-  var badge = el('price-sync-badge');
-  var txt = el('price-sync-text');
-  if (!badge || !txt) return;
-  badge.className = 'badge loading';
-  txt.textContent = 'Зареждане...';
-  try {
-    var res = await fetch(SCRIPT_URL + '?action=getLivePrices');
-    var json = await res.json();
-    if (json.ok && json.prices) {
-      livePriceCache = json.prices;
-      // Update local prices object
-      Object.keys(json.prices).forEach(function(t) {
-        if (json.prices[t] > 0) prices[t] = json.prices[t];
-      });
-      localStorage.setItem('misho_prices', JSON.stringify(prices));
-      badge.className = 'badge ok';
-      txt.textContent = 'Актуални цени ' + new Date().toLocaleTimeString('bg-BG');
-      renderLivePrices();
-      renderAll();
-    } else {
-      throw new Error(json.error || 'Грешка');
-    }
-  } catch(err) {
-    badge.className = 'badge error';
-    txt.textContent = 'Грешка при зареждане на цени';
-    renderLivePrices();
-  }
-}
-
-function renderLivePrices() {
-  var grid = el('live-prices-grid');
-  if (!grid) return;
-  var tickers = ['EUNL','ZPRL','MIVA','XEON','GOLD'];
-  var colors  = { EUNL:'#6EE7B7', ZPRL:'#34D399', MIVA:'#10B981', XEON:'#60A5FA', GOLD:'#FCD34D' };
-  grid.innerHTML = tickers.map(function(t) {
-    var p = prices[t] || 0;
-    var meta = assetMeta[t] || {};
-    return '<div class="price-tile" style="border:1px solid ' + (colors[t]||'#334155') + '33">'
-      + '<div class="price-tile-top" style="background:' + (colors[t]||'#334155') + '"></div>'
-      + '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600">' + t + '</div>'
-      + '<div style="font-size:18px;font-weight:700;color:#f1f5f9">' + fmtNumber(p, 2) + ' EUR</div>'
-      + '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escapeHtml(meta.label || t) + '</div>'
-      + '</div>';
-  }).join('');
-}
-
-// ── PORTFOLIO GROWTH CHART ───────────────────────────────────────────────────
-var growthChartInstance = null;
-
-function buildMonthlyGrowth() {
-  var monthly = {};
-  var sorted = txns.slice().sort(function(a,b){ return dateSortValue(a.date)-dateSortValue(b.date); });
-  sorted.forEach(function(tx) {
-    var d = parseDateValue(tx.date);
-    if (!d) return;
-    var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
-    if (!monthly[key]) monthly[key] = 0;
-    var qty = Number(tx.qty), price = Number(tx.price);
-    if (tx.action === 'Купи' || tx.action === 'Спести') monthly[key] += qty * price;
-    else monthly[key] -= qty * price;
-  });
-  // Cumulative
-  var keys = Object.keys(monthly).sort();
-  var cumulative = [];
-  var running = 0;
-  keys.forEach(function(k) {
-    running += monthly[k];
-    cumulative.push({ label: k, value: Math.round(running) });
-  });
-  return cumulative;
-}
-
-function renderGrowthChart() {
-  var canvas = el('growth-chart');
-  if (!canvas) return;
-  var data = buildMonthlyGrowth();
-  if (growthChartInstance) { growthChartInstance.destroy(); growthChartInstance = null; }
-  var labels = data.map(function(d){ return d.label; });
-  var values = data.map(function(d){ return d.value; });
-  var goalLine = values.map(function(){ return 50000; });
-  growthChartInstance = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Портфолио (EUR)',
-          data: values,
-          borderColor: '#6EE7B7',
-          backgroundColor: 'rgba(110,231,183,0.08)',
-          borderWidth: 2.5,
-          pointRadius: 4,
-          pointBackgroundColor: '#6EE7B7',
-          fill: true,
-          tension: 0.3
-        },
-        {
-          label: 'Цел 50 000 EUR',
-          data: goalLine,
-          borderColor: '#60A5FA',
-          borderWidth: 1.5,
-          borderDash: [6,4],
-          pointRadius: 0,
-          fill: false,
-          tension: 0
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } },
-        tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('bg-BG') + ' EUR'; } } }
-      },
-      scales: {
-        x: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } }, grid: { color: '#1e293b' } },
-        y: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, callback: function(v){ return v.toLocaleString('bg-BG') + ' EUR'; } }, grid: { color: '#1e293b' } }
-      }
-    }
-  });
-}
-
-// ── NAP EXPORT ───────────────────────────────────────────────────────────────
-function buildNAPData() {
-  var etfTickers = ['EUNL','ZPRL','MIVA','XEON'];
-  return etfTickers.map(function(ticker) {
-    var buys = txns.filter(function(t){ return t.ticker === ticker && t.action === 'Купи'; });
-    var totalQty = buys.reduce(function(s,t){ return s + Number(t.qty); }, 0);
-    var totalCost = buys.reduce(function(s,t){ return s + Number(t.qty)*Number(t.price); }, 0);
-    var avgPrice = totalQty > 0 ? totalCost / totalQty : 0;
-    var curPrice = prices[ticker] || avgPrice;
-    var currentValue = totalQty * curPrice;
-    var firstDate = buys.length ? buys.reduce(function(min,t){ return dateSortValue(t.date) < dateSortValue(min.date) ? t : min; }).date : '-';
-    return {
-      ticker: ticker,
-      name: assetMeta[ticker] ? assetMeta[ticker].label : ticker,
-      qty: totalQty,
-      avgPrice: avgPrice,
-      curPrice: curPrice,
-      totalCost: totalCost,
-      currentValue: currentValue,
-      firstDate: formatDateDisplay(firstDate)
-    };
-  });
-}
-
-function renderNAPTable() {
-  var tbl = el('nap-table');
-  if (!tbl) return;
-  var data = buildNAPData();
-  var header = '<div class="nap-grid nap-header">'
-    + '<div>Тикер</div><div>Наименование</div><div>Брой дялове</div>'
-    + '<div>Ср. цена (EUR)</div><div>Обща цена на придобиване (EUR)</div><div>Текуща стойност (EUR)</div>'
-    + '</div>';
-  var rows = data.map(function(d) {
-    return '<div class="nap-grid nap-row">'
-      + '<div style="font-weight:700;color:var(--green)">' + d.ticker + '</div>'
-      + '<div style="font-size:12px;color:var(--sub)">' + escapeHtml(d.name) + '</div>'
-      + '<div>' + fmtNumber(d.qty, 4) + '</div>'
-      + '<div>' + fmtNumber(d.avgPrice, 2) + '</div>'
-      + '<div style="font-weight:600">' + fmtNumber(d.totalCost, 2) + '</div>'
-      + '<div style="font-weight:600;color:var(--green)">' + fmtNumber(d.currentValue, 2) + '</div>'
-      + '</div>';
-  }).join('');
-  tbl.innerHTML = header + rows;
-}
-
-function exportNAP(mode) {
-  var data = buildNAPData();
-  if (mode === 'csv') {
-    var rows = [
-      ['Тикер','Наименование','Брой дялове','Средна цена на придобиване (EUR)','Обща цена на придобиване (EUR)','Текуща стойност (EUR)','Първа дата на придобиване'],
-    ];
-    data.forEach(function(d) {
-      rows.push([d.ticker, d.name, d.qty.toFixed(4), d.avgPrice.toFixed(2), d.totalCost.toFixed(2), d.currentValue.toFixed(2), d.firstDate]);
-    });
-    var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
-    var a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,﻿' + encodeURIComponent(csv);
-    a.download = 'NAP-ETF-' + new Date().getFullYear() + '.csv';
-    a.click();
-  } else {
-    var win = window.open('', '_blank');
-    var html = '<html><head><meta charset="UTF-8"><title>НАП ETF справка</title>'
-      + '<style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px}table{border-collapse:collapse;width:100%}th{background:#f0f4f8;padding:8px;text-align:left;border:1px solid #ddd}td{padding:8px;border:1px solid #ddd}</style></head><body>'
-      + '<h2>Справка за НАП — ETF позиции</h2>'
-      + '<p style="color:#666">Генерирано на: ' + new Date().toLocaleDateString('bg-BG') + '</p>'
-      + '<table><tr><th>Тикер</th><th>Наименование</th><th>Брой дялове</th><th>Ср. цена (EUR)</th><th>Обща цена (EUR)</th><th>Текуща стойност (EUR)</th><th>Първа дата</th></tr>';
-    data.forEach(function(d) {
-      html += '<tr><td><b>' + d.ticker + '</b></td><td>' + d.name + '</td><td>' + d.qty.toFixed(4) + '</td><td>' + d.avgPrice.toFixed(2) + '</td><td>' + d.totalCost.toFixed(2) + '</td><td>' + d.currentValue.toFixed(2) + '</td><td>' + d.firstDate + '</td></tr>';
-    });
-    html += '</table></body></html>';
-    win.document.write(html);
-    win.document.close();
-    win.print();
-  }
-}
-
-function renderAnalysis() {
-  renderLivePrices();
-  renderGrowthChart();
-  renderNAPTable();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   el('today-date').textContent = new Date().toLocaleDateString('bg-BG');
   el('f-date').value = todayISO();
-  el('refresh-btn').addEventListener('click', loadFromSheets);
-  el('f-ticker').addEventListener('change', function() {
-    var t = el('f-ticker').value;
-    el('f-price').value = prices[t] || (assetMeta[t] ? assetMeta[t].price : 1) || 1;
+  el('refresh-btn').addEventListener('click', function(){ loadFromSheets(); });
+  el('f-ticker').addEventListener('change', function() { el('f-price').value = getPrice(el('f-ticker').value); });
+  el('checklist-grid').addEventListener('click', function(e) {
+    var item = e.target.closest('.check-item');
+    if (item) toggleCheck(item.dataset.key);
   });
-  mergePricesFromMeta(assetMeta);
+  el('checklist-grid').addEventListener('keydown', function(e) {
+    var item = e.target.closest('.check-item');
+    if (item && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); toggleCheck(item.dataset.key); }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); }
+  });
+
+  // Показваме последните известни данни веднага, докато Sheets се зарежда
+  bootstrapFromCache();
   populateTickerSelects();
+  initForecast();
+  initAllocation();
+  initCalculator();
   renderChecklist();
+  rebuildTransactions();
   loadFromSheets();
+  renderAll();
 });
 </script>
 </body>
