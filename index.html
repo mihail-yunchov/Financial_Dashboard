@@ -77,6 +77,14 @@
 
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
   .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; }
+  .file-input { width:100%; padding:12px; background:#080d1a; border:1px dashed var(--border); border-radius:8px; color:var(--sub); font-family:'Inter',sans-serif; font-size:13px; color-scheme:dark; }
+  .imp-summary { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 4px; }
+  .imp-section { margin-top:16px; }
+  .imp-section h4 { font-size:12px; color:var(--sub); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:6px; font-weight:700; }
+  .imp-row { display:grid; grid-template-columns: 22px 92px 62px 1fr; gap:8px; align-items:center; padding:7px 4px; border-bottom:1px solid #1e293b; font-size:12px; color:#cbd5e1; }
+  .imp-row input[type=checkbox] { width:16px; height:16px; accent-color: var(--green); }
+  .imp-row .muted { color: var(--muted); }
+  .imp-progress { margin-top:12px; font-size:12px; color:var(--yellow); }
   .cash-acc-row { display:grid; grid-template-columns: 1fr 140px 28px; gap:8px; align-items:center; margin-bottom:8px; }
   .cash-acc-row input { width:100%; background:#080d1a; border:1px solid var(--border); border-radius:8px; padding:9px 10px; color:#f1f5f9; font-size:14px; font-family:'Inter',sans-serif; color-scheme:dark; }
   .cash-acc-row input:focus { outline: 2px solid var(--green); outline-offset: -1px; }
@@ -300,6 +308,7 @@
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap: wrap;">
         <select id="filter-ticker" onchange="renderJournal()" style="background:#080d1a;border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:#f1f5f9;font-size:13px;font-family:Inter,sans-serif"></select>
+        <button class="btn-ghost" onclick="openImportModal()">Импорт от Revolut</button>
         <button class="btn-primary" onclick="openTxnModal()">+ Добави</button>
       </div>
     </div>
@@ -408,6 +417,19 @@
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closePriceModal()">Откажи</button>
       <button class="btn-blue" onclick="applyPrices()">Запази</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="import-modal" onclick="if(event.target===this)closeImportModal()">
+  <div class="modal-box" style="max-width:760px">
+    <div class="modal-title" style="color:var(--blue)">Импорт от Revolut</div>
+    <div class="modal-sub">Избери извлечението от Revolut: Invest → Documents → <b>Account statement</b> (PDF). Файлът се чете само в браузъра. Нищо не се записва, докато не натиснеш „Приложи“.</div>
+    <input type="file" id="import-file" class="file-input" accept="application/pdf,.pdf" aria-label="PDF извлечение от Revolut">
+    <div id="import-result"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeImportModal()">Затвори</button>
+      <button class="btn-blue" id="import-apply-btn" onclick="applyRevolutImport()" disabled>Приложи</button>
     </div>
   </div>
 </div>
@@ -2163,14 +2185,7 @@ async function deleteTxn(id) {
   isDeleting = true;
   setSyncStatus('loading', 'Изтриване...');
   try {
-    // Редовете в Sheets се изместват след всяко изтриване, затова винаги
-    // четем JOURNAL наново и проверяваме, че на този ред е точно този запис.
-    var fresh = parseJournal((await fetchJSON('getJournal')).data || [], 'sheets');
-    var sig = txnSignature(target);
-    var matches = fresh.filter(function(t){ return txnSignature(t) === sig; });
-    if (!matches.length) throw new Error('записът вече го няма в Sheets');
-    var row = matches.find(function(t){ return t.sheetRowIndex === target.sheetRowIndex; }) || matches[0];
-    await fetchJSON('deleteJournalRow', '&rowIndex=' + row.sheetRowIndex);
+    await deleteJournalTxnVerified(target);
     setSyncStatus('ok', 'Изтрито от Sheets');
   } catch (err) {
     isDeleting = false;
@@ -2180,6 +2195,17 @@ async function deleteTxn(id) {
   }
   isDeleting = false;
   await loadFromSheets();
+}
+
+// Редовете в Sheets се изместват след всяко изтриване, затова винаги четем JOURNAL
+// наново и проверяваме, че на този ред е точно този запис.
+async function deleteJournalTxnVerified(target) {
+  var fresh = parseJournal((await fetchJSON('getJournal')).data || [], 'sheets');
+  var sig = txnSignature(target);
+  var matches = fresh.filter(function(t){ return txnSignature(t) === sig; });
+  if (!matches.length) throw new Error('записът вече го няма в Sheets');
+  var row = matches.find(function(t){ return t.sheetRowIndex === target.sheetRowIndex; }) || matches[0];
+  await fetchJSON('deleteJournalRow', '&rowIndex=' + row.sheetRowIndex);
 }
 
 async function pushSnapshotTxn(i) {
@@ -2211,6 +2237,257 @@ function dismissSnapshotTxn(i) {
 function dismissAllSnapshotTxns() {
   if (!confirm('Да игнорирам ли всички ' + missingSnapshotTxns.length + ' записа? Те няма да се добавят в Sheets.')) return;
   dismissSnapshotTxns(missingSnapshotTxns.slice());
+}
+
+// ── REVOLUT IMPORT ──────────────────────────────────────────────────────────
+// Чете PDF извлечението „Account statement“ от Revolut в браузъра (pdf.js), намира
+// сделките и ги сравнява с журнала по тикер + брой дялове. Показва нови сделки,
+// разлики в дата/цена/такса и позициите спрямо дашборда. Записва само одобреното.
+var PDFJS_BASE = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+var pdfJsPromise = null;
+var importState = null;
+var isImporting = false;
+var REVOLUT_MONTHS = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+var NUM = '([\\d,]*\\.?\\d+)';
+var REVOLUT_TRADE_RE = new RegExp('^(\\d{1,2}) ([A-Za-z]{3}) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) GMT ([A-Z0-9.]+) Trade\\s*-\\s*[A-Za-z]+ '
+  + NUM + ' €\\s?' + NUM + ' (Buy|Sell) -?€\\s?' + NUM + ' €\\s?' + NUM + ' €\\s?' + NUM + '$');
+var REVOLUT_POSITION_RE = new RegExp('^([A-Z0-9.]{1,8}) (.+?) ([A-Z]{2}[A-Z0-9]{9}\\d) ' + NUM + ' €\\s?' + NUM + ' €\\s?' + NUM + ' ([\\d.]+)%$');
+var REVOLUT_PERIOD_RE = /Period (\d{1,2}) ([A-Za-z]{3}) (\d{4}) - (\d{1,2}) ([A-Za-z]{3}) (\d{4})/;
+
+function revolutNum(s) { return parseFloat(String(s).replace(/,/g, '')); }
+
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (pdfJsPromise) return pdfJsPromise;
+  pdfJsPromise = new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = PDFJS_BASE + 'pdf.min.js';
+    s.onload = function() {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    s.onerror = function() { pdfJsPromise = null; reject(new Error('PDF четецът не се зареди (няма интернет?)')); };
+    document.head.appendChild(s);
+  });
+  return pdfJsPromise;
+}
+
+// PDF → редове текст (елементите на един ред се подреждат по x)
+async function pdfToLines(file) {
+  var lib = await loadPdfJs();
+  var pdf = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+  var lines = [];
+  for (var n = 1; n <= pdf.numPages; n++) {
+    var content = await (await pdf.getPage(n)).getTextContent();
+    var rows = [];
+    content.items.forEach(function(it) {
+      if (!it.str || !it.str.trim()) return;
+      var y = it.transform[5], x = it.transform[4];
+      var row = rows.find(function(r){ return Math.abs(r.y - y) < 2.5; });
+      if (!row) { row = { y: y, items: [] }; rows.push(row); }
+      row.items.push({ x: x, s: it.str });
+    });
+    rows.sort(function(a, b){ return b.y - a.y; });
+    rows.forEach(function(r) {
+      lines.push(r.items.sort(function(a, b){ return a.x - b.x; }).map(function(i){ return i.s.trim(); }).join(' ').replace(/\s+/g, ' ').trim());
+    });
+  }
+  return lines;
+}
+
+function parseRevolutLines(lines) {
+  var trades = [], positions = [], period = null;
+  lines.forEach(function(line) {
+    var pm = !period && line.match(REVOLUT_PERIOD_RE);
+    if (pm) period = { from: new Date(+pm[3], REVOLUT_MONTHS[pm[2]], +pm[1]).getTime(), to: new Date(+pm[6], REVOLUT_MONTHS[pm[5]], +pm[4], 23, 59, 59).getTime() };
+    var m = line.match(REVOLUT_TRADE_RE);
+    if (m && REVOLUT_MONTHS[m[2]] != null) {
+      // Часът е в GMT → превръщаме в местна дата
+      var at = new Date(Date.UTC(+m[3], REVOLUT_MONTHS[m[2]], +m[1], +m[4], +m[5], +m[6]));
+      trades.push({
+        dateKey: isoDate(at), ts: at.getTime(), ticker: m[7].toUpperCase(),
+        qty: revolutNum(m[8]), price: revolutNum(m[9]), side: m[10],
+        value: revolutNum(m[11]), fee: Math.round((revolutNum(m[12]) + revolutNum(m[13])) * 100) / 100
+      });
+      return;
+    }
+    var p = line.match(REVOLUT_POSITION_RE);
+    if (p) positions.push({ ticker: p[1].toUpperCase(), name: p[2], isin: p[3], qty: revolutNum(p[4]), price: revolutNum(p[5]), value: revolutNum(p[6]) });
+  });
+  return { trades: trades, positions: positions, period: period };
+}
+
+function dayDiff(a, b) { return Math.abs(dateSortValue(a) - dateSortValue(b)) / 86400000; }
+
+// Сравнение със журнала: всяка сделка се свързва с най-много един запис (тикер + посока + брой дялове)
+function matchRevolutTrades(parsed) {
+  var used = {};
+  var rows = parsed.trades.map(function(tr, i) {
+    var base = { i: i, tr: tr };
+    if (!assetMeta[tr.ticker]) return Object.assign(base, { status: 'skipped' });
+    var buy = tr.side === 'Buy';
+    var candidates = txns.filter(function(t) {
+      return !used[t.id] && t.ticker === tr.ticker && isPositiveAction(t.action) === buy && Math.abs(t.qty - tr.qty) < 1e-6;
+    }).sort(function(a, b){ return dayDiff(a.date, tr.dateKey) - dayDiff(b.date, tr.dateKey); });
+    var m = candidates[0];
+    if (!m) return Object.assign(base, { status: 'new' });
+    used[m.id] = true;
+    var d = parseDateValue(m.date);
+    var diffs = [];
+    if (!d || isoDate(d) !== tr.dateKey) diffs.push('дата ' + formatDateDisplay(m.date) + ' → ' + formatDateDisplay(tr.dateKey));
+    if (Math.abs(m.price - tr.price) > 0.005) diffs.push('цена ' + fmtNumber(m.price, 2) + ' → ' + fmtNumber(tr.price, 2));
+    if (Math.abs((m.fee || 0) - tr.fee) > 0.005) diffs.push('такса ' + fmtNumber(m.fee || 0, 2) + ' → ' + fmtNumber(tr.fee, 2));
+    return Object.assign(base, { status: diffs.length ? 'diff' : 'match', txn: m, diffs: diffs });
+  });
+  var statementTickers = {};
+  parsed.trades.concat(parsed.positions).forEach(function(x){ statementTickers[x.ticker] = true; });
+  var orphans = txns.filter(function(t) {
+    if (used[t.id] || !statementTickers[t.ticker] || !assetMeta[t.ticker]) return false;
+    var ts = dateSortValue(t.date);
+    return !parsed.period || (ts >= parsed.period.from && ts <= parsed.period.to);
+  });
+  var p = calcPortfolio();
+  var holdings = parsed.positions.map(function(pos) {
+    var mine = p.holdings[pos.ticker];
+    return { pos: pos, mine: mine, tracked: !!assetMeta[pos.ticker], ok: mine != null && Math.abs(mine - pos.qty) < 1e-6 };
+  });
+  return { rows: rows, orphans: orphans, holdings: holdings };
+}
+
+function openImportModal() {
+  importState = null;
+  el('import-file').value = '';
+  el('import-result').innerHTML = '';
+  el('import-apply-btn').disabled = true;
+  el('import-apply-btn').textContent = 'Приложи';
+  el('import-modal').classList.remove('hidden');
+}
+function closeImportModal() {
+  if (isImporting) return;
+  el('import-modal').classList.add('hidden');
+}
+
+async function handleImportFile(file) {
+  if (!file) return;
+  var box = el('import-result');
+  box.innerHTML = '<div class="imp-progress">Четене на файла...</div>';
+  el('import-apply-btn').disabled = true;
+  try {
+    var parsed = parseRevolutLines(await pdfToLines(file));
+    if (!parsed.trades.length && !parsed.positions.length) throw new Error('Не намерих сделки. Това „Account statement“ от Revolut ли е?');
+    importState = { parsed: parsed, match: matchRevolutTrades(parsed), selected: {} };
+    importState.match.rows.forEach(function(r){ if (r.status === 'new' || r.status === 'diff') importState.selected[r.i] = true; });
+    renderImportResult();
+  } catch (err) {
+    importState = null;
+    box.innerHTML = '<div class="imp-progress" style="color:var(--red)">' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function importRowHtml(r, desc) {
+  var tr = r.tr;
+  var selectable = r.status === 'new' || r.status === 'diff';
+  return '<label class="imp-row">'
+    + (selectable ? '<input type="checkbox" data-imp="' + r.i + '"' + (importState.selected[r.i] ? ' checked' : '') + '>' : '<span></span>')
+    + '<span>' + escapeHtml(formatDateDisplay(tr.dateKey)) + '</span>'
+    + '<b>' + escapeHtml(tr.ticker) + '</b>'
+    + '<span>' + (tr.side === 'Buy' ? 'Купи ' : 'Продай ') + escapeHtml(fmtNumber(tr.qty, 8)) + ' × ' + escapeHtml(fmtNumber(tr.price, 2)) + ' EUR'
+    + (tr.fee ? ', такса ' + escapeHtml(fmtNumber(tr.fee, 2)) : '') + (desc ? ' <span class="muted">— ' + desc + '</span>' : '') + '</span>'
+    + '</label>';
+}
+
+function renderImportResult() {
+  var st = importState, m = st.match;
+  var by = function(s){ return m.rows.filter(function(r){ return r.status === s; }); };
+  var news = by('new'), diffs = by('diff'), matches = by('match'), skipped = by('skipped');
+  var skippedTickers = Object.keys(skipped.reduce(function(o, r){ o[r.tr.ticker] = true; return o; }, {}));
+  var pill = function(cls, text){ return '<span class="pill ' + cls + '">' + escapeHtml(text) + '</span>'; };
+  var html = '<div class="imp-summary">'
+    + pill('dim', st.parsed.trades.length + ' сделки във файла')
+    + pill('ok', matches.length + ' съвпадат')
+    + pill(diffs.length ? 'warn' : 'dim', diffs.length + ' с разлика')
+    + pill(news.length ? 'local' : 'dim', news.length + ' нови')
+    + (skipped.length ? pill('dim', skipped.length + ' пропуснати') : '')
+    + '</div>';
+
+  if (news.length) html += '<div class="imp-section"><h4>Нови сделки — ще се добавят</h4>' + news.map(function(r){ return importRowHtml(r, ''); }).join('') + '</div>';
+  if (diffs.length) html += '<div class="imp-section"><h4>Различия — ще се поправят по Revolut</h4>'
+    + diffs.map(function(r){ return importRowHtml(r, escapeHtml(r.diffs.join('; '))); }).join('') + '</div>';
+  if (m.orphans.length) html += '<div class="imp-section"><h4>В журнала, но не и в Revolut</h4>'
+    + m.orphans.map(function(t) {
+        return '<div class="imp-row"><span></span><span>' + escapeHtml(formatDateDisplay(t.date)) + '</span><b>' + escapeHtml(t.ticker) + '</b><span>'
+          + escapeHtml(t.action) + ' ' + escapeHtml(fmtNumber(t.qty, 8)) + ' <span class="muted">— провери дали не е дубликат или грешка</span></span></div>';
+      }).join('') + '</div>';
+  if (m.holdings.length) html += '<div class="imp-section"><h4>Позиции в Revolut спрямо дашборда</h4>'
+    + m.holdings.map(function(h) {
+        var state = !h.tracked ? '<span class="muted">не се следи в дашборда</span>'
+          : h.ok ? '<span style="color:var(--green)">✓ съвпада</span>'
+          : '<span style="color:var(--yellow)">дашборд: ' + escapeHtml(fmtNumber(h.mine || 0, 8)) + '</span>';
+        return '<div class="imp-row"><span></span><b>' + escapeHtml(h.pos.ticker) + '</b><span>' + escapeHtml(fmtNumber(h.pos.qty, 4)) + '</span><span>' + state + '</span></div>';
+      }).join('') + '</div>';
+  if (skippedTickers.length) html += '<div class="mini-note" style="margin-top:10px">Пропуснати (няма ги в SETTINGS): ' + escapeHtml(skippedTickers.join(', ')) + '. Ако искаш да се следят, добави ги в листа SETTINGS.</div>';
+  if (!news.length && !diffs.length) html += '<div class="mini-note" style="margin-top:10px;color:var(--green)">Журналът е в синхрон с Revolut — няма какво да се променя.</div>';
+  if (journalSource !== 'sheets' && (news.length || diffs.length)) html += '<div class="mini-note" style="margin-top:10px;color:var(--yellow)">Няма връзка с Google Sheets — промените не могат да се запишат сега.</div>';
+  html += '<div id="import-progress" class="imp-progress"></div>';
+  el('import-result').innerHTML = html;
+  updateImportButton();
+}
+
+function updateImportButton() {
+  var n = importState ? Object.keys(importState.selected).filter(function(k){ return importState.selected[k]; }).length : 0;
+  var btn = el('import-apply-btn');
+  btn.textContent = n ? 'Приложи (' + n + ')' : 'Приложи';
+  btn.disabled = !n || isImporting || journalSource !== 'sheets';
+}
+
+async function applyRevolutImport() {
+  if (!importState || isImporting || journalSource !== 'sheets') return;
+  var todo = importState.match.rows.filter(function(r){ return importState.selected[r.i] && (r.status === 'new' || r.status === 'diff'); });
+  if (!todo.length) return;
+  isImporting = true;
+  updateImportButton();
+  var progress = el('import-progress');
+  var done = 0, failed = [];
+  for (var k = 0; k < todo.length; k++) {
+    var r = todo[k], tr = r.tr;
+    progress.textContent = 'Записване ' + (k + 1) + ' от ' + todo.length + '...';
+    var corrected = r.status === 'new'
+      ? { date: tr.dateKey, action: tr.side === 'Buy' ? 'Купи' : 'Продай', ticker: tr.ticker, qty: tr.qty, price: tr.price, fee: tr.fee, note: 'Revolut импорт' }
+      : Object.assign(stripTxn(r.txn), { date: tr.dateKey, price: tr.price, fee: tr.fee });
+    try {
+      if (r.status === 'diff' && r.txn.source === 'pending') {
+        removeOnePending(r.txn);
+        pendingTxns.push(corrected);
+        persistPendingTxns();
+      } else {
+        // Първо добавяме верния запис, после махаме стария: при прекъсване по-скоро ще има дубликат, отколкото загуба
+        await appendRowToSheets(buildSheetRow(corrected));
+        if (r.status === 'diff') await deleteJournalTxnVerified(r.txn);
+      }
+      done += 1;
+    } catch (err) {
+      failed.push(tr.ticker + ' ' + formatDateDisplay(tr.dateKey) + ': ' + err.message);
+    }
+  }
+  isImporting = false;
+  progress.textContent = '';
+  await loadFromSheets();
+  importState = { parsed: importState.parsed, match: matchRevolutTrades(importState.parsed), selected: {} };
+  renderImportResult();
+  el('import-progress').innerHTML = failed.length
+    ? '<span style="color:var(--red)">Готово: ' + done + ' успешни, ' + failed.length + ' неуспешни.<br>' + escapeHtml(failed.join('; ')) + '</span>'
+    : '<span style="color:var(--green)">Готово: ' + done + ' промени са записани в Sheets.</span>';
+  setSyncStatus(failed.length ? 'warn' : 'ok', failed.length ? 'Импорт: ' + failed.length + ' неуспешни' : 'Импортът е записан');
+}
+
+function initImport() {
+  el('import-file').addEventListener('change', function(){ handleImportFile(this.files && this.files[0]); });
+  el('import-result').addEventListener('change', function(e) {
+    var i = e.target.dataset && e.target.dataset.imp;
+    if (i == null || !importState) return;
+    importState.selected[i] = e.target.checked;
+    updateImportButton();
+  });
 }
 
 // ── CASH BALANCE UPDATE ─────────────────────────────────────────────────────
@@ -2903,7 +3180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (item && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); toggleCheck(item.dataset.key); }
   });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); closeCashModal(); }
+    if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); closeCashModal(); closeImportModal(); }
   });
 
   // Показваме последните известни данни веднага, докато Sheets се зарежда
@@ -2913,6 +3190,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initAllocation();
   initCashModal();
   initHistory();
+  initImport();
   initCalculator();
   renderChecklist();
   rebuildTransactions();
