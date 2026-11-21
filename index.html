@@ -336,8 +336,14 @@
     </div>
     <div class="card mb24" id="history-card" style="border:1px solid rgba(252,211,77,0.27)">
       <div class="card-top" style="background:var(--yellow)"></div>
-      <div class="flex-sb" style="flex-wrap:wrap;gap:12px;margin-bottom:14px">
-        <div class="section-title" style="margin:0">Стойност във времето</div>
+      <div class="section-title" style="margin-bottom:12px">Стойност във времето</div>
+      <div class="flex-sb" style="flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <div class="seg" id="history-group" role="group" aria-label="Активи">
+          <button type="button" data-group="all">Всичко</button>
+          <button type="button" data-group="stocks">Акции</button>
+          <button type="button" data-group="stocksGold">Акции + злато</button>
+          <button type="button" data-group="gold">Злато</button>
+        </div>
         <div class="seg" id="history-range" role="group" aria-label="Период">
           <button type="button" data-range="1">1М</button>
           <button type="button" data-range="3">3М</button>
@@ -347,7 +353,12 @@
         </div>
       </div>
       <div id="history-stats" class="stat-grid" style="margin-bottom:14px"></div>
-      <div id="history-chart-wrap"><canvas id="history-chart" height="90"></canvas></div>
+      <div id="history-chart-wrap">
+        <canvas id="history-chart" height="90"></canvas>
+        <div class="section-title" style="margin:22px 0 4px">Печалба / загуба във времето</div>
+        <div class="mini-note" style="margin:0 0 10px">Над нулата (зелено) си на печалба, под нулата (червено) на загуба. Това е разликата между жълтата и зелената линия отгоре.</div>
+        <canvas id="pnl-chart" height="55"></canvas>
+      </div>
       <div class="mini-note" id="history-note" style="margin-top:8px"></div>
     </div>
     <div id="live-prices-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:28px"></div>
@@ -717,7 +728,8 @@ var LS_KEYS = {
   forecast: 'misho_forecast_prefs',
   cashAccounts: 'misho_cash_accounts',
   history: 'misho_history_cache',
-  historyRange: 'misho_history_range'
+  historyRange: 'misho_history_range',
+  historyGroup: 'misho_history_group'
 };
 
 function lsGet(key, fallback) {
@@ -2765,17 +2777,35 @@ var historyRows = [];
 var historyStatus = 'none';   // none | ok | empty | cached | unsupported | error
 var historyRange = Number(lsGet(LS_KEYS.historyRange, 0)) || 0; // месеци назад; 0 = всичко
 var historyChartInstance = null;
+var pnlChartInstance = null;
+var HISTORY_GROUPS = {
+  all:        { label: 'Всичко',        types: null,                     note: 'всички активи, с кеша' },
+  stocks:     { label: 'Акции',         types: ['ETF', 'Stocks'],        note: 'ETF-ите и робо-акциите' },
+  stocksGold: { label: 'Акции + злато', types: ['ETF', 'Stocks', 'Gold'], note: 'ETF-ите, робо-акциите и златото' },
+  gold:       { label: 'Злато',         types: ['Gold'],                 note: 'само физическото злато' }
+};
+var historyGroup = HISTORY_GROUPS[lsGet(LS_KEYS.historyGroup, 'all')] ? lsGet(LS_KEYS.historyGroup, 'all') : 'all';
+
+function historyGroupTickers(group) {
+  var types = HISTORY_GROUPS[group].types;
+  return Object.keys(assetMeta).filter(function(t){ return !types || types.indexOf(assetMeta[t].type) >= 0; });
+}
 
 function parseHistory(data) {
   if (!Array.isArray(data) || data.length < 2) return [];
   var h = data[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
   var iDate = h.indexOf('date'), iTotal = h.indexOf('total value'), iContrib = h.indexOf('contributed');
   if (iDate < 0 || iTotal < 0 || iContrib < 0) return [];
+  // Колоните след "Market gain" са стойностите по актив (EUNL, ZPRL, ...)
+  var tickerCols = [];
+  data[0].forEach(function(c, i) { if (i > Math.max(iDate, iTotal, iContrib, h.indexOf('market gain'))) tickerCols.push({ i: i, t: String(c).trim().toUpperCase() }); });
   return data.slice(1).map(function(row) {
     var d = parseDateValue(row[iDate]);
     var total = parseNumber(row[iTotal], NaN), contributed = parseNumber(row[iContrib], NaN);
     if (!d || isNaN(total) || isNaN(contributed)) return null;
-    return { key: isoDate(d), ts: d.getTime(), total: total, contributed: contributed };
+    var values = {};
+    tickerCols.forEach(function(c){ values[c.t] = parseNumber(row[c.i], 0); });
+    return { key: isoDate(d), ts: d.getTime(), total: total, contributed: contributed, values: values, hasValues: tickerCols.length > 0 };
   }).filter(Boolean).sort(function(a, b){ return a.ts - b.ts; });
 }
 
@@ -2796,15 +2826,65 @@ async function loadHistory() {
   if (!el('tab-analysis').classList.contains('hidden')) renderAnalysis();
 }
 
-// Историята + днешната точка по текущите (live) цени
+// Вложено по актив към всяка дата от историята (от журнала, средно претеглена цена)
+function costsByDate(rows) {
+  var sorted = txns.slice().sort(function(a, b) {
+    return dateSortValue(a.date) - dateSortValue(b.date)
+      || (isPositiveAction(a.action) ? 0 : 1) - (isPositiveAction(b.action) ? 0 : 1);
+  });
+  var qty = {}, cost = {}, j = 0;
+  return rows.map(function(r) {
+    var cutoff = endOfDay(r.key);
+    while (j < sorted.length && dateSortValue(sorted[j].date) <= cutoff) {
+      var tx = sorted[j++], t = tx.ticker;
+      if (!qty[t]) { qty[t] = 0; cost[t] = 0; }
+      if (isPositiveAction(tx.action)) { qty[t] += tx.qty; cost[t] += tx.qty * tx.price + (tx.fee || 0); }
+      else {
+        var avg = qty[t] > 0 ? cost[t] / qty[t] : 0, q = Math.min(tx.qty, qty[t]);
+        qty[t] -= q; cost[t] = Math.max(0, cost[t] - avg * q);
+      }
+    }
+    return Object.assign({}, cost);
+  });
+}
+
+// Историята + днешната точка по текущите (live) цени, сметната за избраната група активи
 function historySeries(p) {
   var rows = historyRows.slice();
-  var cashValue = Object.keys(assetMeta).reduce(function(s, t){ return s + (assetMeta[t].type === 'Cash' ? (p.values[t] || 0) : 0); }, 0);
   var today = new Date();
-  var live = { key: isoDate(today), ts: new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime(), total: p.totalValue, contributed: p.pnl.cost + cashValue };
+  var live = { key: isoDate(today), ts: new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime(), values: Object.assign({}, p.values), hasValues: true };
   if (rows.length && rows[rows.length - 1].key === live.key) rows[rows.length - 1] = live;
   else if (!rows.length || rows[rows.length - 1].ts < live.ts) rows.push(live);
-  return rows;
+  var tickers = historyGroupTickers(historyGroup);
+  var costs = costsByDate(rows);
+  return rows.map(function(r, i) {
+    if (!r.hasValues) return r; // стар формат без колони по актив — само общо
+    var total = 0, contributed = 0;
+    tickers.forEach(function(t) {
+      var v = r.values[t] || 0;
+      total += v;
+      contributed += assetMeta[t].type === 'Cash' ? v : (costs[i][t] || 0);
+    });
+    return { key: r.key, ts: r.ts, total: total, contributed: contributed };
+  });
+}
+
+function pnlChartOptions() {
+  return {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: function(ctx) { return ' Печалба/загуба: ' + fmtSignedEUR(ctx.parsed.y); } } }
+    },
+    scales: {
+      x: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, maxTicksLimit: 8, maxRotation: 0 }, grid: { color: '#1e293b' } },
+      y: {
+        ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, callback: function(v){ return (v > 0 ? '+' : '') + v.toLocaleString('bg-BG') + ' EUR'; } },
+        grid: { color: function(ctx){ return ctx.tick && ctx.tick.value === 0 ? '#64748b' : '#1e293b'; }, lineWidth: function(ctx){ return ctx.tick && ctx.tick.value === 0 ? 1.5 : 1; } }
+      }
+    }
+  };
 }
 
 function renderHistory(p) {
@@ -2813,9 +2893,13 @@ function renderHistory(p) {
   [].forEach.call(document.querySelectorAll('#history-range button'), function(b) {
     b.classList.toggle('on', Number(b.dataset.range) === historyRange);
   });
+  [].forEach.call(document.querySelectorAll('#history-group button'), function(b) {
+    b.classList.toggle('on', b.dataset.group === historyGroup);
+  });
   var note = el('history-note');
   var wrap = el('history-chart-wrap');
   if (historyChartInstance) { historyChartInstance.destroy(); historyChartInstance = null; }
+  if (pnlChartInstance) { pnlChartInstance.destroy(); pnlChartInstance = null; }
 
   if (!historyRows.length) {
     stats.innerHTML = '';
@@ -2842,14 +2926,17 @@ function renderHistory(p) {
   var fromContrib = last.contributed - first.contributed;
   var fromMarket = change - fromContrib;
   var sinceText = 'от ' + formatDateDisplay(first.key);
+  var pnlNow = last.total - last.contributed;
+  var signColor = function(n){ return n >= 0.5 ? 'var(--green)' : n <= -0.5 ? 'var(--red)' : null; };
   stats.innerHTML = [
     statTile('Стойност', fmtEUR(last.total), 'към ' + formatDateDisplay(last.key)),
-    statTile('Промяна', fmtSignedEUR(change), sinceText),
-    statTile('От вноски', fmtSignedEUR(fromContrib), 'нови пари в портфолиото'),
-    statTile('От пазара', fmtSignedEUR(fromMarket), 'промяна на цените', fromMarket >= 0.5 ? 'var(--green)' : fromMarket <= -0.5 ? 'var(--red)' : null)
+    statTile('Печалба сега', fmtSignedEUR(pnlNow), (last.contributed > 0 ? fmtSignedPct(pnlNow / last.contributed) + ' върху ' : 'върху ') + fmtEUR(last.contributed) + ' вложени', signColor(pnlNow)),
+    statTile('От вноски', fmtSignedEUR(fromContrib), 'нови пари за периода (' + sinceText + ')'),
+    statTile('От пазара', fmtSignedEUR(fromMarket), 'промяна на цените за периода', signColor(fromMarket))
   ].join('');
 
-  note.textContent = 'История от ' + formatDateDisplay(all[0].key) + (historyStatus === 'cached' ? ' (запазено копие, няма връзка)' : '')
+  note.textContent = HISTORY_GROUPS[historyGroup].label + ': ' + HISTORY_GROUPS[historyGroup].note
+    + ' • история от ' + formatDateDisplay(all[0].key) + (historyStatus === 'cached' ? ' (запазено копие, няма връзка)' : '')
     + ' • нов ред всяка вечер около 20:00 • последната точка е по текущите цени';
 
   if (typeof Chart === 'undefined') return;
@@ -2860,7 +2947,7 @@ function renderHistory(p) {
       labels: labels,
       datasets: [
         { label: 'Пазарна стойност', data: rows.map(function(r){ return Math.round(r.total); }), borderColor: '#FCD34D', backgroundColor: '#FCD34D', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.2, fill: false },
-        { label: 'Вложено (с кеша)', data: rows.map(function(r){ return Math.round(r.contributed); }), borderColor: '#6EE7B7', backgroundColor: '#6EE7B7', borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, stepped: true, fill: false }
+        { label: historyGroup === 'all' ? 'Вложено (с кеша)' : 'Вложено', data: rows.map(function(r){ return Math.round(r.contributed); }), borderColor: '#6EE7B7', backgroundColor: '#6EE7B7', borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, stepped: true, fill: false }
       ]
     },
     options: {
@@ -2884,6 +2971,23 @@ function renderHistory(p) {
       }
     }
   });
+
+  // Печалба/загуба = стойност − вложено; зелено над нулата, червено под нея
+  pnlChartInstance = new Chart(el('pnl-chart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Печалба/загуба',
+        data: rows.map(function(r){ return Math.round(r.total - r.contributed); }),
+        borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.2,
+        borderColor: '#6EE7B7',
+        segment: { borderColor: function(ctx){ return (ctx.p0.parsed.y + ctx.p1.parsed.y) / 2 < 0 ? '#F87171' : '#6EE7B7'; } },
+        fill: { target: 'origin', above: 'rgba(110,231,183,0.15)', below: 'rgba(248,113,113,0.18)' }
+      }]
+    },
+    options: pnlChartOptions()
+  });
 }
 
 function initHistory() {
@@ -2897,6 +3001,13 @@ function initHistory() {
     if (!b) return;
     historyRange = Number(b.dataset.range) || 0;
     lsSet(LS_KEYS.historyRange, historyRange);
+    renderHistory(calcPortfolio());
+  });
+  el('history-group').addEventListener('click', function(e) {
+    var b = e.target.closest('button[data-group]');
+    if (!b || !HISTORY_GROUPS[b.dataset.group]) return;
+    historyGroup = b.dataset.group;
+    lsSet(LS_KEYS.historyGroup, historyGroup);
     renderHistory(calcPortfolio());
   });
 }
