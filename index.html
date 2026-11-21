@@ -131,6 +131,9 @@
   .fc-headline { padding:10px 14px; border-radius:8px; font-size:13px; font-weight:600; margin-bottom:12px; line-height:1.45; }
   .fc-headline.ok  { background: rgba(110,231,183,0.08); border:1px solid rgba(110,231,183,0.3); color: var(--green); }
   .fc-headline.bad { background: rgba(252,211,77,0.08);  border:1px solid rgba(252,211,77,0.3);  color: var(--yellow); }
+  .seg { display:inline-flex; background:#0b1222; border:1px solid #334155; border-radius:8px; padding:2px; gap:2px; }
+  .seg button { background:none; color:var(--muted); font-size:12px; font-weight:600; padding:5px 10px; border-radius:6px; }
+  .seg button.on { background:#1e293b; color:#f1f5f9; }
   .stat-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:10px; }
   .stat-tile { background:#0b1222; border-radius:8px; padding:10px 12px; }
   .stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; font-weight:600; margin-bottom:4px; }
@@ -322,11 +325,27 @@
         <span id="price-sync-text">Live цените още не са заредени</span>
       </div>
     </div>
+    <div class="card mb24" id="history-card" style="border:1px solid rgba(252,211,77,0.27)">
+      <div class="card-top" style="background:var(--yellow)"></div>
+      <div class="flex-sb" style="flex-wrap:wrap;gap:12px;margin-bottom:14px">
+        <div class="section-title" style="margin:0">Стойност във времето</div>
+        <div class="seg" id="history-range" role="group" aria-label="Период">
+          <button type="button" data-range="1">1М</button>
+          <button type="button" data-range="3">3М</button>
+          <button type="button" data-range="6">6М</button>
+          <button type="button" data-range="12">1Г</button>
+          <button type="button" data-range="0">Всичко</button>
+        </div>
+      </div>
+      <div id="history-stats" class="stat-grid" style="margin-bottom:14px"></div>
+      <div id="history-chart-wrap"><canvas id="history-chart" height="90"></canvas></div>
+      <div class="mini-note" id="history-note" style="margin-top:8px"></div>
+    </div>
     <div id="live-prices-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:28px"></div>
     <div class="card mb24" style="border:1px solid rgba(96,165,250,0.27)">
       <div class="card-top" style="background:var(--blue)"></div>
       <div class="section-title" style="margin-bottom:4px">Вложени средства и прогноза</div>
-      <div class="mini-note" style="margin:0 0 16px">Зелено: натрупана сума на вноските по цена на покупка (с таксите), не пазарна стойност. Жълтата точка е пазарната стойност днес. Лилавият пунктир е прогнозата до срока с настройките от картата „Прогноза към целта“ в „Обзор“.</div>
+      <div class="mini-note" style="margin:0 0 16px">Зелено: натрупана сума на вноските по цена на покупка (с таксите), не пазарна стойност. Жълтото е пазарната стойност: в края на всеки месец от историята, а днес по текущите цени. Лилавият пунктир е прогнозата до срока с настройките от картата „Прогноза към целта“ в „Обзор“.</div>
       <canvas id="growth-chart" height="80"></canvas>
     </div>
     <div class="card" style="border:1px solid rgba(110,231,183,0.27)">
@@ -674,7 +693,9 @@ var LS_KEYS = {
   snapshotDismissed: 'misho_snapshot_dismissed',
   calc: 'misho_calc_prefs',
   forecast: 'misho_forecast_prefs',
-  cashAccounts: 'misho_cash_accounts'
+  cashAccounts: 'misho_cash_accounts',
+  history: 'misho_history_cache',
+  historyRange: 'misho_history_range'
 };
 
 function lsGet(key, fallback) {
@@ -1140,6 +1161,7 @@ async function loadFromSheets() {
     if (settingsSource === 'sheets' || journalSource === 'sheets') {
       loadTitle();
       fetchLivePrices(); // живи цени при всяко зареждане (Apps Script ги кешира за 15 мин.)
+      loadHistory();
     } else {
       el('sheet-name').textContent = 'офлайн режим';
       el('sheet-name').style.color = '#f87171';
@@ -2460,6 +2482,148 @@ function renderLivePrices() {
   }).join('');
 }
 
+// ── VALUE HISTORY ───────────────────────────────────────────────────────────
+// Листът HISTORY (пълни се от History.gs всяка вечер): Date | Total value | Contributed | Market gain | ...
+var historyRows = [];
+var historyStatus = 'none';   // none | ok | empty | cached | unsupported | error
+var historyRange = Number(lsGet(LS_KEYS.historyRange, 0)) || 0; // месеци назад; 0 = всичко
+var historyChartInstance = null;
+
+function parseHistory(data) {
+  if (!Array.isArray(data) || data.length < 2) return [];
+  var h = data[0].map(function(c){ return String(c || '').trim().toLowerCase(); });
+  var iDate = h.indexOf('date'), iTotal = h.indexOf('total value'), iContrib = h.indexOf('contributed');
+  if (iDate < 0 || iTotal < 0 || iContrib < 0) return [];
+  return data.slice(1).map(function(row) {
+    var d = parseDateValue(row[iDate]);
+    var total = parseNumber(row[iTotal], NaN), contributed = parseNumber(row[iContrib], NaN);
+    if (!d || isNaN(total) || isNaN(contributed)) return null;
+    return { key: isoDate(d), ts: d.getTime(), total: total, contributed: contributed };
+  }).filter(Boolean).sort(function(a, b){ return a.ts - b.ts; });
+}
+
+async function loadHistory() {
+  try {
+    var json = await fetchJSON('getHistory');
+    historyRows = parseHistory(json.data || []);
+    historyStatus = historyRows.length ? 'ok' : 'empty';
+    lsSet(LS_KEYS.history, { ts: Date.now(), rows: json.data || [] });
+  } catch (err) {
+    historyStatus = /unknown action/i.test(err.message) ? 'unsupported' : 'error';
+    var cached = lsGet(LS_KEYS.history, null);
+    if (historyStatus === 'error' && cached && cached.rows) {
+      historyRows = parseHistory(cached.rows);
+      if (historyRows.length) historyStatus = 'cached';
+    }
+  }
+  if (!el('tab-analysis').classList.contains('hidden')) renderAnalysis();
+}
+
+// Историята + днешната точка по текущите (live) цени
+function historySeries(p) {
+  var rows = historyRows.slice();
+  var cashValue = Object.keys(assetMeta).reduce(function(s, t){ return s + (assetMeta[t].type === 'Cash' ? (p.values[t] || 0) : 0); }, 0);
+  var today = new Date();
+  var live = { key: isoDate(today), ts: new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime(), total: p.totalValue, contributed: p.pnl.cost + cashValue };
+  if (rows.length && rows[rows.length - 1].key === live.key) rows[rows.length - 1] = live;
+  else if (!rows.length || rows[rows.length - 1].ts < live.ts) rows.push(live);
+  return rows;
+}
+
+function renderHistory(p) {
+  var stats = el('history-stats');
+  if (!stats) return;
+  [].forEach.call(document.querySelectorAll('#history-range button'), function(b) {
+    b.classList.toggle('on', Number(b.dataset.range) === historyRange);
+  });
+  var note = el('history-note');
+  var wrap = el('history-chart-wrap');
+  if (historyChartInstance) { historyChartInstance.destroy(); historyChartInstance = null; }
+
+  if (!historyRows.length) {
+    stats.innerHTML = '';
+    wrap.style.display = 'none';
+    note.innerHTML = historyStatus === 'unsupported'
+      ? 'Историята още не е включена в Apps Script. Инсталирай <b>apps-script/History.gs</b> — стъпките са в началото на файла.'
+      : historyStatus === 'empty'
+        ? 'Листът HISTORY е празен. В Apps Script пусни <b>backfillHistory</b>, за да се попълни миналото.'
+        : historyStatus === 'none' ? 'Зареждане на историята...' : 'Историята не можа да се зареди.';
+    return;
+  }
+  wrap.style.display = '';
+
+  var all = historySeries(p);
+  var rows = all;
+  if (historyRange > 0) {
+    var now = new Date();
+    var cutoff = new Date(now.getFullYear(), now.getMonth() - historyRange, now.getDate()).getTime();
+    rows = all.filter(function(r){ return r.ts >= cutoff; });
+    if (rows.length < 2) rows = all.slice(-2);
+  }
+  var first = rows[0], last = rows[rows.length - 1];
+  var change = last.total - first.total;
+  var fromContrib = last.contributed - first.contributed;
+  var fromMarket = change - fromContrib;
+  var sinceText = 'от ' + formatDateDisplay(first.key);
+  stats.innerHTML = [
+    statTile('Стойност', fmtEUR(last.total), 'към ' + formatDateDisplay(last.key)),
+    statTile('Промяна', fmtSignedEUR(change), sinceText),
+    statTile('От вноски', fmtSignedEUR(fromContrib), 'нови пари в портфолиото'),
+    statTile('От пазара', fmtSignedEUR(fromMarket), 'промяна на цените', fromMarket >= 0.5 ? 'var(--green)' : fromMarket <= -0.5 ? 'var(--red)' : null)
+  ].join('');
+
+  note.textContent = 'История от ' + formatDateDisplay(all[0].key) + (historyStatus === 'cached' ? ' (запазено копие, няма връзка)' : '')
+    + ' • нов ред всяка вечер около 20:00 • последната точка е по текущите цени';
+
+  if (typeof Chart === 'undefined') return;
+  var labels = rows.map(function(r){ var d = new Date(r.ts); return d.toLocaleDateString('bg-BG', { day: '2-digit', month: '2-digit', year: '2-digit' }); });
+  historyChartInstance = new Chart(el('history-chart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Пазарна стойност', data: rows.map(function(r){ return Math.round(r.total); }), borderColor: '#FCD34D', backgroundColor: '#FCD34D', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.2, fill: false },
+        { label: 'Вложено (с кеша)', data: rows.map(function(r){ return Math.round(r.contributed); }), borderColor: '#6EE7B7', backgroundColor: '#6EE7B7', borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4, stepped: true, fill: false }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ' ' + ctx.dataset.label + ': ' + fmtEUR(ctx.parsed.y); },
+            footer: function(items) {
+              if (items.length < 2) return '';
+              return 'Печалба: ' + fmtSignedEUR(items[0].parsed.y - items[1].parsed.y);
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, maxTicksLimit: 8, maxRotation: 0 }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#64748b', font: { family: 'Inter', size: 11 }, callback: function(v){ return v.toLocaleString('bg-BG') + ' EUR'; } }, grid: { color: '#1e293b' } }
+      }
+    }
+  });
+}
+
+function initHistory() {
+  var cached = lsGet(LS_KEYS.history, null);
+  if (cached && cached.rows) {
+    historyRows = parseHistory(cached.rows);
+    if (historyRows.length) historyStatus = 'cached';
+  }
+  el('history-range').addEventListener('click', function(e) {
+    var b = e.target.closest('button[data-range]');
+    if (!b) return;
+    historyRange = Number(b.dataset.range) || 0;
+    lsSet(LS_KEYS.historyRange, historyRange);
+    renderHistory(calcPortfolio());
+  });
+}
+
 // ── CONTRIBUTIONS CHART ─────────────────────────────────────────────────────
 function buildMonthlyContributions() {
   var monthly = {};
@@ -2498,7 +2662,14 @@ function renderGrowthChart(p) {
   var now = new Date();
   var curIdx = labels.indexOf(monthKey(now));
   if (curIdx < 0) curIdx = labels.length - 1;
-  var marketPoint = values.map(function(_, i){ return i === curIdx ? Math.round(p.totalValue) : null; });
+  // Пазарна стойност: последният запис от историята за всеки минал месец + днес по текущите цени
+  var monthEnd = {};
+  historyRows.forEach(function(r){ monthEnd[r.key.slice(0, 7)] = r.total; });
+  var marketPoint = labels.map(function(k, i) {
+    if (i === curIdx) return Math.round(p.totalValue);
+    return (i < curIdx && monthEnd[k] != null) ? Math.round(monthEnd[k]) : null;
+  });
+  var marketPoints = marketPoint.filter(function(v){ return v != null; }).length;
 
   // Прогноза: от днешната пазарна стойност до срока, с вноската и доходността от картата „Прогноза“
   var f = buildForecast(p);
@@ -2521,7 +2692,8 @@ function renderGrowthChart(p) {
       labels: labels,
       datasets: [
         { label: 'Вложени средства (EUR)', data: values, borderColor: '#6EE7B7', backgroundColor: 'rgba(110,231,183,0.08)', borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#6EE7B7', fill: true, tension: 0.3 },
-        { label: 'Пазарна стойност днес', data: marketPoint, borderColor: '#FCD34D', backgroundColor: '#FCD34D', pointRadius: 6, pointHoverRadius: 8, showLine: false },
+        { label: marketPoints > 1 ? 'Пазарна стойност' : 'Пазарна стойност днес', data: marketPoint, borderColor: '#FCD34D', backgroundColor: '#FCD34D', borderWidth: 2,
+          pointRadius: marketPoint.map(function(_, i){ return i === curIdx ? 6 : 3; }), pointHoverRadius: 7, showLine: marketPoints > 1, spanGaps: true, tension: 0.2, fill: false },
         { label: 'Прогноза (' + fmtEUR(f.pmt) + '/мес' + (forecastPrefs.returnPct ? ', ' + forecastPrefs.returnPct + '%' : '') + ')', data: projection, borderColor: '#A78BFA', backgroundColor: '#A78BFA', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, fill: false, tension: 0 },
         { label: 'Цел ' + fmtEUR(TOTAL_GOAL), data: goalLine, borderColor: '#60A5FA', borderWidth: 1.5, borderDash: [6,4], pointRadius: 0, fill: false, tension: 0 }
       ]
@@ -2667,6 +2839,7 @@ function exportNAP(mode) {
 
 function renderAnalysis(p) {
   p = p || calcPortfolio();
+  renderHistory(p);
   renderLivePrices();
   renderGrowthChart(p);
   renderNAPYearOptions();
@@ -2739,6 +2912,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initForecast();
   initAllocation();
   initCashModal();
+  initHistory();
   initCalculator();
   renderChecklist();
   rebuildTransactions();
