@@ -77,6 +77,13 @@
 
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
   .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; }
+  .login-overlay { position:fixed; inset:0; z-index:300; background:#080d1a; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .login-overlay.hidden { display:none; }
+  .login-box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; width:100%; max-width:380px; }
+  .login-box .logo { margin-bottom:4px; }
+  .login-error { color:var(--red); font-size:12px; min-height:18px; margin-top:8px; }
+  .login-remember { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--sub); margin-top:12px; }
+  .login-remember input { accent-color: var(--green); width:16px; height:16px; }
   .file-input { width:100%; padding:12px; background:#080d1a; border:1px dashed var(--border); border-radius:8px; color:var(--sub); font-family:'Inter',sans-serif; font-size:13px; color-scheme:dark; }
   .imp-summary { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 4px; }
   .imp-section { margin-top:16px; }
@@ -194,6 +201,18 @@
 </head>
 <body>
 
+<div class="login-overlay" id="login-overlay">
+  <form class="login-box" id="login-form" autocomplete="on">
+    <div class="logo">Финансов дашборд</div>
+    <div class="modal-sub" style="margin-bottom:18px">Въведи паролата, за да се свържеш с данните.</div>
+    <input type="text" name="username" value="dashboard" autocomplete="username" hidden>
+    <div class="field"><label for="login-password">Парола</label><input type="password" id="login-password" autocomplete="current-password" required></div>
+    <label class="login-remember"><input type="checkbox" id="login-remember" checked> Запомни ме на това устройство</label>
+    <div class="login-error" id="login-error" role="alert"></div>
+    <button type="submit" class="btn-primary" id="login-btn" style="width:100%;margin-top:6px">Вход</button>
+  </form>
+</div>
+
 <div class="header">
   <div class="header-left">
     <div>
@@ -211,6 +230,7 @@
     <button class="btn-ghost" onclick="downloadBackup()">Backup</button>
     <button class="btn-ghost" onclick="openPriceModal()">Обнови цени</button>
     <button class="btn-primary" onclick="openCashModal()">Обнови кеша</button>
+    <button class="btn-ghost" onclick="logout()" title="Излез и изтрий данните от това устройство">Изход</button>
   </div>
 </div>
 
@@ -509,208 +529,9 @@ var CHECKLIST_DATA = [
   { title: "Годишен контрол", period: "year", color: "#FCD34D", items: ["Обобщи растежа на всички активи","Прегледай дела на златото и кеша","Актуализирай целта / плана за следващата година","Провери кои активи са най-далеч от target mix"] }
 ];
 
-// Офлайн резервно копие на JOURNAL от Google Sheets (обновено 21.11.2026).
-// Използва се само когато няма връзка със Sheets и в браузъра няма запазено копие.
-var DEFAULT_TXNS = [
-  {
-    "date": "07.11.2025",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 1.71818716,
-    "price": 108.82,
-    "fee": 1.02,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "20.10.2025",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 1.70389528,
-    "price": 109.15,
-    "fee": 1.02,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "27.12.2025",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 1.67256236,
-    "price": 111.8,
-    "fee": 0,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "12.01.2026",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 1.65019559,
-    "price": 113.32,
-    "fee": 0,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "19.01.2026",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 4.93835517,
-    "price": 113.32,
-    "fee": 1.4,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "31.10.2025",
-    "action": "Купи",
-    "ticker": "GOLD",
-    "qty": 50,
-    "price": 111.6,
-    "fee": 0,
-    "note": "Първа инвестиция в злато (50гр. - 2х20гр; 1х10гр)"
-  },
-  {
-    "date": "14.10.2025",
-    "action": "Купи",
-    "ticker": "MIVA",
-    "qty": 0.91466283,
-    "price": 153.04,
-    "fee": 1.02,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "17.11.2025",
-    "action": "Купи",
-    "ticker": "MIVA",
-    "qty": 0.91346906,
-    "price": 153.24,
-    "fee": 1.02,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "12.01.2026",
-    "action": "Купи",
-    "ticker": "MIVA",
-    "qty": 1.79186328,
-    "price": 156.82,
-    "fee": 1,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "19.01.2026",
-    "action": "Купи",
-    "ticker": "MIVA",
-    "qty": 2.6916943,
-    "price": 156.76,
-    "fee": 1.05,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "24.02.2026",
-    "action": "Купи",
-    "ticker": "MIVA",
-    "qty": 3.7318056,
-    "price": 166.26,
-    "fee": 1.55,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "23.01.2026",
-    "action": "Купи",
-    "ticker": "XEON",
-    "qty": 1.00003033,
-    "price": 148.37,
-    "fee": 1,
-    "note": "Реинвестирани в ETF фонд"
-  },
-  {
-    "date": "12.02.2026",
-    "action": "Купи",
-    "ticker": "XEON",
-    "qty": 52.91565771,
-    "price": 148.38,
-    "fee": 0,
-    "note": "Реинвестирани в ETF фонд"
-  },
-  {
-    "date": "01.11.2025",
-    "action": "Купи",
-    "ticker": "STOCKS",
-    "qty": 579,
-    "price": 1,
-    "fee": 0,
-    "note": "Инвестиция в Акции"
-  },
-  {
-    "date": "14.10.2025",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 2.48326875,
-    "price": 56.78,
-    "fee": 0,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "17.11.2025",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 2.48239436,
-    "price": 56.8,
-    "fee": 0,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "27.12.2025",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 2.44498777,
-    "price": 57.26,
-    "fee": 1,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "12.01.2026",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 2.41005336,
-    "price": 58.09,
-    "fee": 1,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "16.01.2026",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 7.34848484,
-    "price": 57.42,
-    "fee": 1.05,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "18.02.2026",
-    "action": "Купи",
-    "ticker": "ZPRL",
-    "qty": 6.87326926,
-    "price": 61.39,
-    "fee": 1.05,
-    "note": "ETF Plan A - Месечна вноска"
-  },
-  {
-    "date": "10.04.2026",
-    "action": "Спести",
-    "ticker": "CASH",
-    "qty": 8171,
-    "price": 1,
-    "fee": 0,
-    "note": "Пари в обръщение към началото на април 2026"
-  },
-  {
-    "date": "20.03.2026",
-    "action": "Купи",
-    "ticker": "EUNL",
-    "qty": 4.00605715,
-    "price": 112.33,
-    "fee": 0,
-    "note": "ETF Plan A - Месечна вноска"
-  }
-];
+// Няма вградени транзакции: файлът е публичен. Без връзка се показва последното копие от Sheets,
+// запазено в браузъра след вход.
+var DEFAULT_TXNS = [];
 
 // ── STATE ───────────────────────────────────────────────────────────────────
 // Източник на истината е JOURNAL в Google Sheets. Когато няма връзка, се показва
@@ -1140,10 +961,75 @@ function renderFilterOptions() {
 }
 
 // ── SHEETS API ──────────────────────────────────────────────────────────────
+// ── LOGIN ──
+// Паролата не се пази никъде: пази се само SHA-256 ключ, който Apps Script проверява при всяка заявка.
+var AUTH_KEY = 'misho_auth_token';
+function getAuthToken() {
+  try { return localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY) || ''; } catch (_) { return ''; }
+}
+function storeAuthToken(token, remember) {
+  try {
+    localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY);
+    (remember ? localStorage : sessionStorage).setItem(AUTH_KEY, token);
+  } catch (_) {}
+}
+function clearAuthToken() { try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (_) {} }
+async function sha256Hex(text) {
+  if (!window.crypto || !crypto.subtle) throw new Error('Браузърът не поддържа защитен вход (отвори страницата през https).');
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [].map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+}
+function showLogin(message) {
+  el('login-overlay').classList.remove('hidden');
+  el('login-error').textContent = message || '';
+  setTimeout(function(){ el('login-password').focus(); }, 50);
+}
+async function submitLogin(e) {
+  if (e) e.preventDefault();
+  var pwd = el('login-password').value;
+  if (!pwd) return;
+  var btn = el('login-btn');
+  btn.disabled = true; btn.textContent = 'Проверка...';
+  el('login-error').textContent = '';
+  try {
+    var token = await sha256Hex(pwd);
+    var res = await fetch(SCRIPT_URL + '?action=getTitle&token=' + token);
+    var json = await res.json();
+    if (!json || !json.ok) throw new Error(json && json.error === 'unauthorized' ? 'Грешна парола.' : 'Сървърът не отговаря правилно.');
+    storeAuthToken(token, el('login-remember').checked);
+    el('login-password').value = '';
+    el('login-overlay').classList.add('hidden');
+    bootstrapFromCache();
+    populateTickerSelects();
+    rebuildTransactions();
+    renderAll();
+    loadFromSheets();
+  } catch (err) {
+    el('login-error').textContent = err.message === 'Failed to fetch' ? 'Няма връзка със сървъра.' : err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Вход';
+  }
+}
+function handleUnauthorized() {
+  clearAuthToken();
+  showLogin('Сесията изтече или паролата е сменена. Влез отново.');
+}
+// Изход: маха ключа и запазените данни от това устройство
+function logout() {
+  if (pendingTxns.length && !confirm(pendingTxns.length + ' записа не са изпратени в Sheets и ще се изгубят. Да изляза ли?')) return;
+  clearAuthToken();
+  try {
+    Object.keys(localStorage).filter(function(k){ return k.indexOf('misho_') === 0; }).forEach(function(k){ localStorage.removeItem(k); });
+  } catch (_) {}
+  location.reload();
+}
+
 async function fetchJSON(action, extra) {
-  var res = await fetch(SCRIPT_URL + '?action=' + action + (extra || ''));
+  var token = getAuthToken();
+  var res = await fetch(SCRIPT_URL + '?action=' + action + (extra || '') + (token ? '&token=' + token : ''));
   if (!res.ok) throw new Error('HTTP ' + res.status);
   var json = await res.json();
+  if (json && json.error === 'unauthorized') { handleUnauthorized(); throw new Error('unauthorized'); }
   if (!json || !json.ok) throw new Error((json && json.error) || 'Невалиден отговор');
   return json;
 }
@@ -1363,9 +1249,14 @@ function renderDataBanner() {
   var box = el('data-banner');
   if (journalSource === 'sheets' || isLoading) { box.innerHTML = ''; return; }
   var last = lastTxnDate();
+  if (journalSource !== 'cache' && !txns.length) {
+    box.innerHTML = '<div class="banner"><b>Няма връзка с Google Sheets</b> и на това устройство няма запазено копие на данните.'
+      + '<div class="mini-note">Провери интернет връзката и опитай с ↻. Ако проблемът продължава, в Apps Script провери Deploy → Manage deployments.</div></div>';
+    return;
+  }
   var what = journalSource === 'cache'
     ? 'последното копие от Sheets, запазено на ' + fmtDateTime(journalAsOf)
-    : 'вградените във файла данни';
+    : 'данните, въведени на това устройство';
   box.innerHTML = '<div class="banner">'
     + '<div><b>Няма връзка с Google Sheets.</b> Показвам ' + what
     + (last ? ' (последна транзакция: ' + escapeHtml(formatDateDisplay(last)) + ')' : '')
@@ -3375,8 +3266,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'Escape') { closeTxnModal(); closePriceModal(); closeCashModal(); closeImportModal(); }
   });
 
-  // Показваме последните известни данни веднага, докато Sheets се зарежда
-  bootstrapFromCache();
+  el('login-form').addEventListener('submit', submitLogin);
+  var loggedIn = !!getAuthToken();
+  // Показваме последните известни данни веднага, докато Sheets се зарежда (само ако сме влезли)
+  if (loggedIn) {
+    el('login-overlay').classList.add('hidden');
+    bootstrapFromCache();
+  } else {
+    showLogin('');
+  }
   populateTickerSelects();
   initForecast();
   initAllocation();
@@ -3386,7 +3284,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initCalculator();
   renderChecklist();
   rebuildTransactions();
-  loadFromSheets();
+  if (loggedIn) loadFromSheets();
   renderAll();
 });
 </script>
